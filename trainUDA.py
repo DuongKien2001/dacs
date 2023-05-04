@@ -571,7 +571,7 @@ def main():
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_mask = cv2.resize(targets_u, (65,65), interpolation = cv.INTER_NEAREST)
+        tgt_mask = cv2.resize(targets_u, (65,65), interpolation = cv2.INTER_NEAREST)
         print(tgt_mask.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
@@ -585,7 +585,7 @@ def main():
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
-        pixelWiseWeight = cv2.resize(pixelWiseWeight, (65,65), interpolation = cv.INTER_NEAREST)
+        pixelWiseWeight = cv2.resize(pixelWiseWeight, (65,65), interpolation = cv2.INTER_NEAREST)
         print(pixelWiseWeight)
 
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
