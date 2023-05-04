@@ -246,7 +246,7 @@ def prototype_dist_init(cfg, trainloader, model):
     max_iters = len(trainloader)
     
     with torch.no_grad():
-        for i, (src_input, src_label, _) in enumerate(trainloader):
+        for i, (src_input, src_label, _, _) in enumerate(trainloader):
             data_time = time.time() - end
 
             src_input = src_input.cuda(non_blocking=True)
