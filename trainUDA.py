@@ -419,7 +419,7 @@ def main():
     model.train()
     #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
-    interp1 = nn.Upsample(size=(65, 65), mode='nearest', align_corners=False)
+    
     start_iteration = 0
 
     if args.resume:
@@ -534,7 +534,7 @@ def main():
             strong_parameters["Mix"] = MixMask1
             _, targets_u1 = strongTransform(strong_parameters, target = torch.cat((labels[1].unsqueeze(0),targets_u_w[1].unsqueeze(0))))
             targets_u = torch.cat((targets_u0,targets_u1)).long()
-
+            print('tu', targets_u.size())
             if pixel_weight == "threshold_uniform":
                 unlabeled_weight = torch.sum(max_probs.ge(0.968).long() == 1).item() / np.size(np.array(targets_u.cpu()))
                 pixelWiseWeight = unlabeled_weight * torch.ones(max_probs.shape).cuda()
@@ -570,7 +570,7 @@ def main():
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_mask = interp1(targets_u)
+        
         print(tgt_mask.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
@@ -584,7 +584,7 @@ def main():
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
-        pixelWiseWeight = interp1(pixelWiseWeight)
+        
         print(pixelWiseWeight)
 
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
