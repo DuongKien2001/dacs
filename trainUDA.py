@@ -485,8 +485,7 @@ def main():
             images_remain = images_remain.cuda()
             inputs_u_w, _ = weakTransform(weak_parameters, data = images_remain)
             #inputs_u_w = inputs_u_w.clone()
-            tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_w)
-            logits_u_w = interp(tgt_out_ema)
+            logits_u_w = interp(ema_model(inputs_u_w)[0])
             logits_u_w, _ = weakTransform(getWeakInverseTransformParameters(weak_parameters), data = logits_u_w.detach())
 
             pseudo_label = torch.softmax(logits_u_w.detach(), dim=1)
@@ -564,13 +563,13 @@ def main():
         
         # source mask: downsample the ground-truth label
         src_out_ema, src_feat_ema = ema_model(images)
+        tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_s)
         B, A, Hs, Ws = src_feat.size()
         src_mask = F.interpolate(labels.unsqueeze(0).float(), size=(Hs, Ws), mode='nearest').squeeze(0).long()
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
-        # target mask: constant threshold -- cfg.SOLVER.THRESHOLD
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_out_maxvalue, tgt_mask = torch.max(logits_u_s, dim=1)
+        tgt_out_maxvalue, tgt_mask = torch.max(tgt_out_ema, dim=1)
         print(tgt_mask.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
