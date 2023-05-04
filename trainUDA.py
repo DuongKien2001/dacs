@@ -525,8 +525,8 @@ def main():
             strong_parameters["Mix"] = MixMask1
             inputs_u_s1, _ = strongTransform(strong_parameters, data = torch.cat((images[1].unsqueeze(0),images_remain[1].unsqueeze(0))))
             inputs_u_s = torch.cat((inputs_u_s0,inputs_u_s1))
-            logits_u_s = interp(model(inputs_u_s)[0])
-            tgt_feat = model(inputs_u_s)[1]
+            logits_u_s, tgt_feat = model(inputs_u_s)
+            logits_u_s = interp(logits_u_s)
 
             strong_parameters["Mix"] = MixMask0
             _, targets_u0 = strongTransform(strong_parameters, target = torch.cat((labels[0].unsqueeze(0),targets_u_w[0].unsqueeze(0))))
