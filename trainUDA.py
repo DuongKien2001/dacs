@@ -571,6 +571,7 @@ def main():
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
         
+        print(targets_u.dtype)
         tgt_mask = F.interpolate(targets_u.unsqueeze(1), size=(65,65), mode='nearest').squeeze(1).long()
         print(tgt_mask.size())
         print(pixelWiseWeight)
