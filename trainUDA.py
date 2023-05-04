@@ -321,7 +321,7 @@ def main():
         if name in saved_state_dict and param.size() == saved_state_dict[name].size():
             new_params[name].copy_(saved_state_dict[name])
     model.load_state_dict(new_params)
-    prototype_dist_init(cfg, trainloader, model)
+    
     # init ema-model
     if train_unlabeled:
         ema_model = create_ema_model(model)
@@ -336,8 +336,7 @@ def main():
             model = DataParallelWithCallback(model, device_ids=gpus)
         else:
             model = torch.nn.DataParallel(model, device_ids=gpus)
-    model.train()
-    model.cuda()
+    
     
     cudnn.benchmark = True
     feat_estimator = prototype_dist_estimator(feature_num=feature_num, cfg=cfg)
@@ -394,7 +393,6 @@ def main():
 
     trainloader_iter = iter(trainloader)
     print('gta size:',len(trainloader))
-
     #Load new data for domain_transfer
 
     # optimizer for segmentation network
@@ -416,7 +414,10 @@ def main():
                         lr=learning_rate, weight_decay=weight_decay)
 
     optimizer.zero_grad()
-
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model.to(device)
+    model.train()
+    prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
     start_iteration = 0
 
