@@ -573,10 +573,9 @@ def main():
         
         
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
+        tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
         print(tgt_mask.size())
-        print(pixelWiseWeight)
         
-
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
