@@ -306,7 +306,7 @@ def main():
 
     # create network
     model = Res_Deeplab(num_classes=num_classes)
-
+    
     # load pretrained parameters
     #saved_state_dict = torch.load(args.restore_from)
         # load pretrained parameters
@@ -321,7 +321,8 @@ def main():
         if name in saved_state_dict and param.size() == saved_state_dict[name].size():
             new_params[name].copy_(saved_state_dict[name])
     model.load_state_dict(new_params)
-
+    model.cuda()
+    prototype_dist_init(cfg, trainloader, model)
     # init ema-model
     if train_unlabeled:
         ema_model = create_ema_model(model)
@@ -338,7 +339,6 @@ def main():
             model = torch.nn.DataParallel(model, device_ids=gpus)
     model.train()
     model.cuda()
-    prototype_dist_init(cfg, trainloader, model)
     
     cudnn.benchmark = True
     feat_estimator = prototype_dist_estimator(feature_num=feature_num, cfg=cfg)
@@ -707,6 +707,7 @@ if __name__ == '__main__':
 
     args = get_arguments()
     
+
     if False:#args.resume:
         config = torch.load(args.resume)['config']
     else:
