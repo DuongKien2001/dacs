@@ -581,6 +581,7 @@ def main():
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         print(torch.min(pixelWiseWeight))
+
         # update feature-level statistics
         feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
@@ -601,7 +602,7 @@ def main():
             tgt_out = logits_u_s_tgt.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
 
             # update output-level statistics
-        
+            print(tgt_mask.size())
             out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
