@@ -604,7 +604,7 @@ def main():
             tgt_out_ema = tgt_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
             # update output-level statistics
             print(tgt_mask.size())
-            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
+            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
             # the proposed contrastive loss on prediction map
@@ -613,7 +613,7 @@ def main():
                                      labels=src_mask) \
                        + pcl_criterion_tgt(Proto=out_estimator.Proto.detach(),
                                        feat=tgt_out,
-                                       labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
+                                       labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
             #meters.update(loss_out=loss_out.item())
 
             loss = loss + cfg.SOLVER.LAMBDA_FEAT * loss_feat + cfg.SOLVER.LAMBDA_OUT * loss_out
