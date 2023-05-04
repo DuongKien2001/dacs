@@ -573,6 +573,7 @@ def main():
         
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         print(tgt_mask.size())
+        print(pixelWiseWeight)
         pixelWiseWeight_s = F.interpolate(pixelWiseWeight.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         print(pixelWiseWeight_s.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
