@@ -582,20 +582,21 @@ def main():
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
+        print(pixelWiseWeight_s)
+        pixelWiseWeight_s = pixelWiseWeight_s.view(2*65*65, )
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight_s)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
         
-        print(pixelWiseWeight)
 
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
                                   feat=src_feat,
                                   labels=src_mask) \
                     + pcl_criterion_tgt(Proto=feat_estimator.Proto.detach(),
                                   feat=tgt_feat,
-                                  labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
+                                  labels=tgt_mask, pixelWiseWeight=pixelWiseWeight_s)
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:
