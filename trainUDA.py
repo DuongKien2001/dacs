@@ -252,7 +252,7 @@ def prototype_dist_init(cfg, trainloader, model):
             src_input = src_input.cuda(non_blocking=True)
             src_label = src_label.cuda(non_blocking=True).long()
 
-            src_feat, src_out = model(src_input)
+            src_out, src_feat = model(src_input)
             B, N, Hs, Ws = src_feat.size()
             _, C, _, _ = src_out.size()
 
