@@ -571,6 +571,7 @@ def main():
         # target mask: constant threshold -- cfg.SOLVER.THRESHOLD
         _, _, Ht, Wt = tgt_feat.size()
         tgt_out_maxvalue, tgt_mask = torch.max(logits_u_s, dim=1)
+        print(tgt_mask.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
 
