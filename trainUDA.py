@@ -631,7 +631,7 @@ def main():
             loss_l_value += L_l.item()
             if train_unlabeled:
                 loss_u_value += L_u.item()
-
+        print(loss)
         loss.backward()
         optimizer.step()
 
