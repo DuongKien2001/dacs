@@ -467,8 +467,8 @@ def main():
 
         #images, labels = weakTransform(weak_parameters, data = images, target = labels)
 
-        pred= interp(model(images)[0])
-        src_feat = model(images)[1]
+        pred, src_feat= interp(model(images)[0])
+        pred = interp(pred)
         L_l = loss_calc(pred, labels) # Cross entropy loss for labeled data
         #L_l = torch.Tensor([0.0]).cuda()
 
@@ -485,7 +485,8 @@ def main():
             images_remain = images_remain.cuda()
             inputs_u_w, _ = weakTransform(weak_parameters, data = images_remain)
             #inputs_u_w = inputs_u_w.clone()
-            logits_u_w = interp(ema_model(inputs_u_w)[0])
+            tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_s)
+            logits_u_w = interp(tgt_out_ema)
             logits_u_w, _ = weakTransform(getWeakInverseTransformParameters(weak_parameters), data = logits_u_w.detach())
 
             pseudo_label = torch.softmax(logits_u_w.detach(), dim=1)
