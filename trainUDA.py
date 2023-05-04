@@ -321,7 +321,6 @@ def main():
         if name in saved_state_dict and param.size() == saved_state_dict[name].size():
             new_params[name].copy_(saved_state_dict[name])
     model.load_state_dict(new_params)
-    model.cuda()
     prototype_dist_init(cfg, trainloader, model)
     # init ema-model
     if train_unlabeled:
