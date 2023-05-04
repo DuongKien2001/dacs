@@ -583,6 +583,7 @@ def main():
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
+        print(pixelWiseWeight)
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
                                   feat=src_feat,
                                   labels=src_mask) \
