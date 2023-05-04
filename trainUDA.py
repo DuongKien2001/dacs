@@ -68,8 +68,13 @@ def get_arguments():
                         help='Name of the run (default: None)')
     parser.add_argument("--save-images", type=str, default=None,
                         help='Include to save images (default: None)')
+    parser.add_argument("-cfg",
+                        "--config-file",
+                        default="",
+                        metavar="FILE",
+                        help="path to config file",
+                        type=str)
     return parser.parse_args()
-
 
 
 def loss_calc(pred, label):
@@ -701,7 +706,7 @@ if __name__ == '__main__':
     print('---------------------------------Starting---------------------------------')
 
     args = get_arguments()
-
+    
     if False:#args.resume:
         config = torch.load(args.resume)['config']
     else:
@@ -771,14 +776,8 @@ if __name__ == '__main__':
         save_unlabeled_images = False
 
     gpus = (0,1,2,3)[:args.gpus]
-    parser = argparse.ArgumentParser(description="Pytorch Domain Adaptive Semantic Segmentation Training")
-    parser.add_argument("-cfg",
-                        "--config-file",
-                        default="",
-                        metavar="FILE",
-                        help="path to config file",
-                        type=str)
-    args = parser.parse_args()
+    
+
     
     cfg.merge_from_file(args.config_file)
     #cfg.merge_from_list(args.opts)
