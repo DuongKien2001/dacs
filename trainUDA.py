@@ -569,7 +569,7 @@ def main():
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_mask = targets_u
+        tgt_out_maxvalue, tgt_mask = torch.max(tgt_out_ema, dim=1)
         print(tgt_mask.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
