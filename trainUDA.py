@@ -593,7 +593,7 @@ def main():
                                   labels=src_mask) \
                     + pcl_criterion_tgt(Proto=feat_estimator.Proto.detach(),
                                   feat=tgt_feat,
-                                  labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight_s))
+                                  labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:
