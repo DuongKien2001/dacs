@@ -10,8 +10,6 @@ import pickle
 import scipy.misc
 from core.configs import cfg
 
-import cv
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
