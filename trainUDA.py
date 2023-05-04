@@ -467,7 +467,7 @@ def main():
 
         #images, labels = weakTransform(weak_parameters, data = images, target = labels)
 
-        pred, src_feat= interp(model(images))
+        pred, src_feat= model(images)
         pred = interp(pred)
         L_l = loss_calc(pred, labels) # Cross entropy loss for labeled data
         #L_l = torch.Tensor([0.0]).cuda()
