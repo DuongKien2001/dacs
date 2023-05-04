@@ -342,7 +342,8 @@ def main():
     feat_estimator = prototype_dist_estimator(feature_num=feature_num, cfg=cfg)
     if cfg.SOLVER.MULTI_LEVEL:
         out_estimator = prototype_dist_estimator(feature_num=cfg.MODEL.NUM_CLASSES, cfg=cfg)
-    pcl_criterion = PrototypeContrastiveLoss(cfg)
+    pcl_criterion_src = PrototypeContrastiveLoss(cfg)
+    pcl_criterion_tgt = PrototypeContrastiveLoss(cfg)
     
     if dataset == 'cityscapes':
         data_loader = get_loader('cityscapes')
@@ -416,7 +417,7 @@ def main():
     optimizer.zero_grad()
     model.cuda()
     model.train()
-    prototype_dist_init(cfg, trainloader, model)
+    #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
     start_iteration = 0
 
@@ -570,8 +571,6 @@ def main():
         # target mask: constant threshold -- cfg.SOLVER.THRESHOLD
         _, _, Ht, Wt = tgt_feat.size()
         tgt_out_maxvalue, tgt_mask = torch.max(logits_u_s, dim=1)
-        for i in range(cfg.MODEL.NUM_CLASSES):
-            tgt_mask[(tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask == i)] = 255
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
 
@@ -580,16 +579,16 @@ def main():
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask)
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
-        loss_feat = pcl_criterion(Proto=feat_estimator.Proto.detach(),
+        loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
                                   feat=src_feat,
                                   labels=src_mask) \
-                    + pcl_criterion(Proto=feat_estimator.Proto.detach(),
+                    + pcl_criterion_tgt(Proto=feat_estimator.Proto.detach(),
                                   feat=tgt_feat,
-                                  labels=tgt_mask)
+                                  labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:
@@ -598,16 +597,16 @@ def main():
 
             # update output-level statistics
         
-            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask)
+            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
             # the proposed contrastive loss on prediction map
-            loss_out = pcl_criterion(Proto=out_estimator.Proto.detach(),
+            loss_out = pcl_criterion_src(Proto=out_estimator.Proto.detach(),
                                      feat=src_out,
                                      labels=src_mask) \
-                       + pcl_criterion(Proto=out_estimator.Proto.detach(),
+                       + pcl_criterion_tgt(Proto=out_estimator.Proto.detach(),
                                        feat=tgt_out,
-                                       labels=tgt_mask)
+                                       labels=tgt_mask, pixelWiseWeight=pixelWiseWeight)
             #meters.update(loss_out=loss_out.item())
 
             loss = loss + cfg.SOLVER.LAMBDA_FEAT * loss_feat + cfg.SOLVER.LAMBDA_OUT * loss_out
@@ -637,10 +636,8 @@ def main():
         print('iter = {0:6d}/{1:6d}, loss_l = {2:.3f}, loss_u = {3:.3f}'.format(i_iter, num_iterations, loss_l_value, loss_u_value))
 
         if i_iter % save_checkpoint_every == 0 and i_iter!=0:
-            if epochs_since_start * len(trainloader) < save_checkpoint_every:
-                _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
-            else:
-                _save_checkpoint(i_iter, model, optimizer, config, ema_model)
+            _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
+
 
         if config['utils']['tensorboard']:
             if 'tensorboard_writer' not in locals():
@@ -668,6 +665,8 @@ def main():
 
             if mIoU > best_mIoU and save_best_model:
                 best_mIoU = mIoU
+                _save_checkpoint(i_iter, model, optimizer, config, ema_model, save_best=True)
+            else:
                 _save_checkpoint(i_iter, model, optimizer, config, ema_model, save_best=True)
 
             if config['utils']['tensorboard']:
@@ -763,6 +762,7 @@ if __name__ == '__main__':
     else:
         checkpoint_dir = os.path.join(config['utils']['checkpoint_dir'], start_writeable + '-' + args.name)
     log_dir = checkpoint_dir
+    print(checkpoint_dir)
 
     val_per_iter = config['utils']['val_per_iter']
     use_tensorboard = config['utils']['tensorboard']

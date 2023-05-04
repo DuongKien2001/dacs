@@ -1,9 +1,9 @@
 import os
 import torch
 import numpy as np
-import scipy.misc as m
-
+from skimage.io import imread
 from torch.utils import data
+import albumentations as A
 
 from data.city_utils import recursive_glob
 from data.augmentations import *
@@ -138,10 +138,10 @@ class cityscapesLoader(data.Dataset):
             os.path.basename(img_path)[:-15] + "gtFine_labelIds.png",
         )
 
-        img = m.imread(img_path)
+        img = imread(img_path)
         img = np.array(img, dtype=np.uint8)
 
-        lbl = m.imread(lbl_path)
+        lbl = imread(lbl_path)
         lbl = np.array(lbl, dtype=np.uint8)
         lbl = self.encode_segmap(lbl)
 
@@ -155,6 +155,12 @@ class cityscapesLoader(data.Dataset):
         if self.return_id:
             return img, lbl, img_name, img_name, index
         return img, lbl, img_path, lbl_path, img_name
+    
+    def _resize(self, hs, ws):
+        # aug = A.Resize(self.cfg.INPUT.SOURCE.SIZE_TRAIN[0], self.cfg.INPUT.SOURCE.SIZE_TRAIN[1], 2)
+        aug = A.Resize(hs, ws, 2)
+        transform = A.Compose([aug])
+        return transform
 
     def transform(self, img, lbl):
         """transform
@@ -162,9 +168,14 @@ class cityscapesLoader(data.Dataset):
         :param img:
         :param lbl:
         """
-        img = m.imresize(
-            img, (self.img_size[0], self.img_size[1])
-        )  # uint8 with RGB mode
+        classes = np.unique(lbl)
+        lbl = lbl.astype(float)
+
+        resize = self._resize(self.img_size[0], self.img_size[1])
+        data = {'image': img, 'mask': lbl}
+        aug = resize(**data)
+        img, lbl = aug['image'], aug['mask']
+
         img = img[:, :, ::-1]  # RGB -> BGR
         img = img.astype(np.float64)
         img -= self.mean
@@ -175,9 +186,6 @@ class cityscapesLoader(data.Dataset):
         # NHWC -> NCHW
         img = img.transpose(2, 0, 1)
 
-        classes = np.unique(lbl)
-        lbl = lbl.astype(float)
-        lbl = m.imresize(lbl, (self.img_size[0], self.img_size[1]), "nearest", mode="F")
         lbl = lbl.astype(int)
         if not np.all(classes == np.unique(lbl)):
             print("WARN: resizing labels yielded fewer classes")

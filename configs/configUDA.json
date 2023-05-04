@@ -38,11 +38,11 @@
   "ignore_label": 255,
 
   "utils": {
-    "save_checkpoint_every": 5000,
-    "checkpoint_dir": "../saved/DeepLabv2",
-    "val_per_iter": 5000,
+    "save_checkpoint_every": 1488,
+    "checkpoint_dir": "/kaggle/working/dacs",
+    "val_per_iter": 1487,
     "tensorboard": true,
-    "log_per_iter": 100,
+    "log_per_iter": 20,
     "save_best_model": true
   }
 }

@@ -100,4 +100,4 @@ _C.TEST.BATCH_SIZE = 1
 _C.OUTPUT_DIR = ""
 _C.resume = ""
 _C.PREPARE_DIR = ""
-_C.CV_DIR = ""
+_C.CV_DIR = "/kaggle/working"
