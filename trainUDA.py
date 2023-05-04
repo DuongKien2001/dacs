@@ -575,21 +575,15 @@ def main():
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         print(tgt_mask.size())
         print(pixelWiseWeight)
-        print(pixelWiseWeight.dtype)
-        pixelWiseWeight_s = F.interpolate(pixelWiseWeight.unsqueeze(1), size=(65,65), mode='nearest').squeeze(1).long()
-        print(pixelWiseWeight_s.size())
-        tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
-        assert not tgt_mask.requires_grad
+        
 
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
-        print(pixelWiseWeight_s)
-        pixelWiseWeight_s = pixelWiseWeight_s.view(2*65*65,)
-        print(pixelWiseWeight_s.size())
+        print(torch.min(pixelWiseWeight))
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight_s)
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
@@ -600,7 +594,7 @@ def main():
                                   labels=src_mask) \
                     + pcl_criterion_tgt(Proto=feat_estimator.Proto.detach(),
                                   feat=tgt_feat,
-                                  labels=tgt_mask, pixelWiseWeight=pixelWiseWeight_s)
+                                  labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight_s))
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:

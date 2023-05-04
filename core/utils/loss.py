@@ -33,14 +33,11 @@ class PrototypeContrastiveLoss(nn.Module):
         logits = feat.mm(Proto.permute(1, 0).contiguous())
         logits = logits / self.cfg.MODEL.CONTRAST.TAU
 
+        ce_criterion = nn.CrossEntropyLoss()
+        loss = ce_criterion(logits, labels)
         if pixelWiseWeight is None:
-            ce_criterion = nn.CrossEntropyLoss()
-            loss = ce_criterion(logits, labels)
+            pass   
         else: 
-            ce_criterion = nn.CrossEntropyLoss(reduction='none')
-            loss = ce_criterion(logits, labels)
-            print(loss.size())
-            print(pixelWiseWeight.size())
-            loss = torch.mean(loss * pixelWiseWeight)
+            loss = loss * pixelWiseWeight
         
         return loss
