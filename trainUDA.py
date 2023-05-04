@@ -583,7 +583,8 @@ def main():
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         print(pixelWiseWeight_s)
-        pixelWiseWeight_s = pixelWiseWeight_s.view(2*65*65, )
+        pixelWiseWeight_s = pixelWiseWeight_s.view(2*65*65,)
+        print(pixelWiseWeight_s.size())
         # update feature-level statistics
         feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pixelWiseWeight_s)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
