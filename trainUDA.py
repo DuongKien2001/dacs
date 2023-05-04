@@ -566,7 +566,7 @@ def main():
         src_out_ema, src_feat_ema = ema_model(images)
         tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_s)
         B, A, Hs, Ws = src_feat.size()
-        src_mask = F.interpolate(labels.unsqueeze(0).float(), size=(Hs, Ws), mode='nearest').squeeze(0).long()
+        src_mask = F.interpolate(labels.unsqueeze(0), size=(Hs, Ws), mode='nearest').squeeze(0).long()
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
@@ -574,7 +574,7 @@ def main():
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         print(tgt_mask.size())
         print(pixelWiseWeight)
-        pixelWiseWeight_s = F.interpolate(pixelWiseWeight.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
+        pixelWiseWeight_s = F.interpolate(pixelWiseWeight.unsqueeze(1), size=(65,65), mode='nearest').squeeze(1).long()
         print(pixelWiseWeight_s.size())
         tgt_mask = tgt_mask.contiguous().view(B * Ht * Wt, )
         assert not tgt_mask.requires_grad
