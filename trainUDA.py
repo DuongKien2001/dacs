@@ -414,8 +414,7 @@ def main():
                         lr=learning_rate, weight_decay=weight_decay)
 
     optimizer.zero_grad()
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    model.to(device)
+    model.cuda()
     model.train()
     prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
