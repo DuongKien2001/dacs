@@ -468,8 +468,8 @@ def main():
 
         #images, labels = weakTransform(weak_parameters, data = images, target = labels)
 
-        pred, src_feat= model(images)
-        pred = interp(pred)
+        src_pred, src_feat= model(images)
+        pred = interp(src_pred)
         L_l = loss_calc(pred, labels) # Cross entropy loss for labeled data
         #L_l = torch.Tensor([0.0]).cuda()
 
@@ -526,8 +526,8 @@ def main():
             strong_parameters["Mix"] = MixMask1
             inputs_u_s1, _ = strongTransform(strong_parameters, data = torch.cat((images[1].unsqueeze(0),images_remain[1].unsqueeze(0))))
             inputs_u_s = torch.cat((inputs_u_s0,inputs_u_s1))
-            logits_u_s, tgt_feat = model(inputs_u_s)
-            logits_u_s = interp(logits_u_s)
+            logits_u_s_tgt, tgt_feat = model(inputs_u_s)
+            logits_u_s = interp(logits_u_s_tgt)
 
             strong_parameters["Mix"] = MixMask0
             _, targets_u0 = strongTransform(strong_parameters, target = torch.cat((labels[0].unsqueeze(0),targets_u_w[0].unsqueeze(0))))
@@ -597,8 +597,8 @@ def main():
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:
-            src_out = pred.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, cfg.MODEL.NUM_CLASSES)
-            tgt_out = logits_u_s.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
+            src_out = src_pred.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, cfg.MODEL.NUM_CLASSES)
+            tgt_out = logits_u_s_tgt.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
 
             # update output-level statistics
         
