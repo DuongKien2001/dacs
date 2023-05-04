@@ -771,9 +771,17 @@ if __name__ == '__main__':
         save_unlabeled_images = False
 
     gpus = (0,1,2,3)[:args.gpus]
+    parser = argparse.ArgumentParser(description="Pytorch Domain Adaptive Semantic Segmentation Training")
+    parser.add_argument("-cfg",
+                        "--config-file",
+                        default="",
+                        metavar="FILE",
+                        help="path to config file",
+                        type=str)
+    args = parser.parse_args()
     
     cfg.merge_from_file(args.config_file)
-    cfg.merge_from_list(args.opts)
+    #cfg.merge_from_list(args.opts)
     cfg.freeze()
 
 
