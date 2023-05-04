@@ -419,7 +419,7 @@ def main():
     model.train()
     #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
-    interp1 = nn.Upsample(size=(65, 65), mode='nearest', align_corners=True)
+    interp1 = nn.Upsample(size=(65, 65), mode='nearest', align_corners=False)
     start_iteration = 0
 
     if args.resume:
