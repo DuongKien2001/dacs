@@ -485,7 +485,7 @@ def main():
             images_remain = images_remain.cuda()
             inputs_u_w, _ = weakTransform(weak_parameters, data = images_remain)
             #inputs_u_w = inputs_u_w.clone()
-            tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_s)
+            tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_w)
             logits_u_w = interp(tgt_out_ema)
             logits_u_w, _ = weakTransform(getWeakInverseTransformParameters(weak_parameters), data = logits_u_w.detach())
 
@@ -564,7 +564,6 @@ def main():
         
         # source mask: downsample the ground-truth label
         src_out_ema, src_feat_ema = ema_model(images)
-        tgt_out_ema, tgt_feat_ema = ema_model(inputs_u_s)
         B, A, Hs, Ws = src_feat.size()
         src_mask = F.interpolate(labels.unsqueeze(0).float(), size=(Hs, Ws), mode='nearest').squeeze(0).long()
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
