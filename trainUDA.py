@@ -588,7 +588,7 @@ def main():
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
 
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=None)
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pseudo_weight)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
@@ -599,7 +599,7 @@ def main():
                                   labels=src_mask) \
                     + pcl_criterion_tgt(Proto=feat_estimator.Proto.detach(),
                                   feat=tgt_feat,
-                                  labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
+                                  labels=tgt_mask, pixelWiseWeight=pseudo_weight)
         #meters.update(loss_feat=loss_feat.item())
 
         if cfg.SOLVER.MULTI_LEVEL:
@@ -608,7 +608,7 @@ def main():
             src_out_ema = src_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, cfg.MODEL.NUM_CLASSES)
             tgt_out_ema = tgt_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
             # update output-level statistics
-            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
+            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=pseudo_weight)
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
             # the proposed contrastive loss on prediction map
@@ -617,7 +617,7 @@ def main():
                                      labels=src_mask) \
                        + pcl_criterion_tgt(Proto=out_estimator.Proto.detach(),
                                        feat=tgt_out,
-                                       labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
+                                       labels=tgt_mask, pixelWiseWeight=pseudo_weight)
             #meters.update(loss_out=loss_out.item())
 
             loss = loss + cfg.SOLVER.LAMBDA_FEAT * loss_feat + cfg.SOLVER.LAMBDA_OUT * loss_out
