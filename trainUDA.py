@@ -677,7 +677,6 @@ def main():
             print("mIoU: ",mIoU)
             if mIoU > best_mIoU and save_best_model:
                 best_mIoU = mIoU
-                _save_checkpoint(i_iter, model, optimizer, config, ema_model, save_best=True)
 
             if config['utils']['tensorboard']:
                 tensorboard_writer.add_scalar('Validation/mIoU', mIoU, i_iter)
