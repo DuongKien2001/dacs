@@ -655,6 +655,7 @@ def main():
             _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
             feat_estimator.save(name='prototype_feat_dist.pth')
             out_estimator.save(name='prototype_out_dist.pth')
+            print('save_prototype')
 
 
         if config['utils']['tensorboard']:
