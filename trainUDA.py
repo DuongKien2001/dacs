@@ -571,17 +571,13 @@ def main():
         assert not src_mask.requires_grad
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
-                                         align_corners=True)
+                                         align_corners=True).squeeze(1)
         
         _, _, Ht, Wt = tgt_feat.size()
         tgt_out_maxvalue, tgt_mask_st = torch.max(tgt_feat, dim=1)
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):
-            a = ((tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask_st == i)).int()
-            print(a.size())
-            b = (pseudo_weight != 1.0).int()
-            print(b, b.size())
             tgt_mask_upt[(((tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask_st == i)).int() + (pseudo_weight != 1.0).int()) == 2] = 255
 
         tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
