@@ -582,7 +582,6 @@ def main():
         print('pe', pseudo_weight.size())
 
         
-        
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
