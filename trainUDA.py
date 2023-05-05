@@ -372,7 +372,7 @@ def main():
         print('Training on number of samples:', partial_size)
         np.random.seed(random_seed)
         trainloader_remain = data.DataLoader(train_dataset,
-                        batch_size=batch_size, shuffle=True, num_workers=4, pin_memory=True)
+                        batch_size=batch_size, shuffle=True, num_workers=1, pin_memory=True)
 
         trainloader_remain_iter = iter(trainloader_remain)
 
@@ -574,7 +574,7 @@ def main():
                                          align_corners=True).squeeze(1)
         
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_out_maxvalue, tgt_mask_st = torch.max(tgt_feat, dim=1)
+        tgt_out_maxvalue, tgt_mask_st = torch.max(tgt_feat_ema, dim=1)
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):

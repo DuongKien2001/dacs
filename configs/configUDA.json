@@ -39,7 +39,7 @@
 
   "utils": {
     "save_checkpoint_every": 1487,
-    "checkpoint_dir": "/kaggle/working/dacs",
+    "checkpoint_dir": "/kaggle/working",
     "val_per_iter": 1487,
     "tensorboard": true,
     "log_per_iter": 20,
