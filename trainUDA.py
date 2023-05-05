@@ -573,15 +573,15 @@ def main():
                                          size=(65,65), mode='bilinear',
                                          align_corners=True)
         
-        pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
         _, _, Ht, Wt = tgt_feat.size()
-        tgt_out_maxvalue, tgt_mask_ema = torch.max(tgt_feat, dim=1)
+        tgt_out_maxvalue, tgt_mask_st = torch.max(tgt_feat, dim=1)
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):
-            tgt_mask_upt[(((tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask_ema == i)).int() + (pseudo_weight != 1.0).int()) == 2] = 255
+            tgt_mask_upt[(((tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask_st == i)).int() + (pseudo_weight != 1.0).int()) == 2] = 255
 
         tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
+        pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
         tgt_mask_upt = tgt_mask_upt.contiguous().view(B * Hs * Ws, )
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
