@@ -572,14 +572,15 @@ def main():
         _, _, Ht, Wt = tgt_feat.size()
         
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
-        print(tgt_mask.size())
+        
         tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
+        print(torch.sum(tgt_mask==0))
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
                                          align_corners=True)
-        print(pseudo_weight.size())
+        
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
-        print('pe', pseudo_weight.size())
+        
 
         
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
@@ -593,8 +594,6 @@ def main():
 
         # contrastive loss on both domains
         
-        print('sr: ',src_feat.size())
-        print('tg: ', tgt_feat.size())
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
                                   feat=src_feat,
                                   labels=src_mask) \
