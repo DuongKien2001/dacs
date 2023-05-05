@@ -8,7 +8,7 @@ class PrototypeContrastiveLoss(nn.Module):
         super(PrototypeContrastiveLoss, self).__init__()
         self.cfg = cfg
 
-    def forward(self, Proto, feat, labels):
+    def forward(self, Proto, feat, labels, pixelWiseWeight=None):
         """
         Args:
             C: NUM_CLASSES A: feat_dim B: batch_size H: feat_high W: feat_width N: number of pixels except IGNORE_LABEL

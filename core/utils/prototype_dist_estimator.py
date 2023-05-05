@@ -33,7 +33,7 @@ class prototype_dist_estimator():
             self.Proto = torch.zeros(self.class_num, feature_num).cuda(non_blocking=True)
             self.Amount = torch.zeros(self.class_num).cuda(non_blocking=True)
 
-    def update(self, features, labels, pixelWiseWeight=None):
+    def update(self, features, labels):
         mask = (labels != self.cfg.INPUT.IGNORE_LABEL)
         # remove IGNORE_LABEL pixels
         labels = labels[mask]
