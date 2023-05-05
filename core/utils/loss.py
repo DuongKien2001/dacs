@@ -24,12 +24,13 @@ class PrototypeContrastiveLoss(nn.Module):
         assert labels.dim() == 1
         # remove IGNORE_LABEL pixels
         mask = (labels != self.cfg.INPUT.IGNORE_LABEL)
+        print("feat", feat.size())
         labels = labels[mask]
         feat = feat[mask]
 
         feat = F.normalize(feat, p=2, dim=1)
         Proto = F.normalize(Proto, p=2, dim=1)
-        print("feat", feat.size())
+        print("feat1", feat.size())
         logits = feat.mm(Proto.permute(1, 0).contiguous())
         logits = logits / self.cfg.MODEL.CONTRAST.TAU
 
