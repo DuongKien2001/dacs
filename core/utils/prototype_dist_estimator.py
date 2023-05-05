@@ -32,6 +32,7 @@ class prototype_dist_estimator():
         else:
             self.Proto = torch.zeros(self.class_num, feature_num).cuda(non_blocking=True)
             self.Amount = torch.zeros(self.class_num).cuda(non_blocking=True)
+            
 
     def update(self, features, labels):
         mask = (labels != self.cfg.INPUT.IGNORE_LABEL)
@@ -72,4 +73,4 @@ class prototype_dist_estimator():
         torch.save({'Proto': self.Proto.cpu(),
                     'Amount': self.Amount.cpu()
                     },
-                   os.path.join(self.cfg.OUTPUT_DIR, name))
+                   os.path.join(self.cfg.OUTPUT_DIR, name))    

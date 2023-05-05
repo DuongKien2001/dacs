@@ -424,7 +424,13 @@ def main():
 
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
+    if True:
+        model.eval()
+        if dataset == 'cityscapes':
+            mIoU, eval_loss = evaluate(model, dataset, ignore_label=250, input_size=(512,1024), save_dir=checkpoint_dir)
 
+        model.train()
+        print("mIoU: ",mIoU, eval_loss)
     accumulated_loss_l = []
     accumulated_loss_u = []
 
@@ -668,22 +674,10 @@ def main():
                     accumulated_loss_u = []
 
 
-        """
-        if i_iter % val_per_iter == 0 and i_iter != 0:
-            model.eval()
-            if dataset == 'cityscapes':
-                mIoU, eval_loss = evaluate(model, dataset, ignore_label=250, input_size=(512,1024), save_dir=checkpoint_dir)
-
-            model.train()
-            print("mIoU: ",mIoU)
-            if mIoU > best_mIoU and save_best_model:
-                best_mIoU = mIoU
-
-            if config['utils']['tensorboard']:
-                tensorboard_writer.add_scalar('Validation/mIoU', mIoU, i_iter)
-                tensorboard_writer.add_scalar('Validation/Loss', eval_loss, i_iter)
-
-        """
+        
+        
+            
+        
         if save_unlabeled_images and train_unlabeled and i_iter % save_checkpoint_every == 0:
             # Saves two mixed images and the corresponding prediction
             save_image(inputs_u_s[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
