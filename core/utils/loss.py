@@ -37,7 +37,7 @@ class PrototypeContrastiveLoss(nn.Module):
         else: 
             ce_criterion = nn.CrossEntropyLoss(reduction='none', ignore_index=255)
             loss = ce_criterion(logits, labels) 
-            print('ls', loss.size())
+            print(torch.sum(loss==0))
             loss = torch.mean(loss * pixelWiseWeight)
         
         return loss
