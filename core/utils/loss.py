@@ -29,7 +29,7 @@ class PrototypeContrastiveLoss(nn.Module):
 
         feat = F.normalize(feat, p=2, dim=1)
         Proto = F.normalize(Proto, p=2, dim=1)
-
+        print("feat", feat.size())
         logits = feat.mm(Proto.permute(1, 0).contiguous())
         logits = logits / self.cfg.MODEL.CONTRAST.TAU
 
