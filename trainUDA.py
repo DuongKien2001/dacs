@@ -579,7 +579,7 @@ def main():
                                          align_corners=True)
         print(pseudo_weight.size())
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
-        print(pseudo_weight.size())
+        print('pe', pseudo_weight.size())
 
         
         
