@@ -164,7 +164,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         #if index > 500:
         #    break
         with torch.no_grad():
-            output  = model(Variable(image).cuda())
+            output  = model(Variable(image).cuda())[0]
             output = interp(output)
 
             label_cuda = Variable(label.long()).cuda()
