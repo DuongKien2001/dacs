@@ -24,25 +24,20 @@ class PrototypeContrastiveLoss(nn.Module):
         assert labels.dim() == 1
         # remove IGNORE_LABEL pixels
         mask = (labels != self.cfg.INPUT.IGNORE_LABEL)
-        print("feat", feat.size())
-        labels = labels[mask]
-        feat = feat[mask]
-        print("feat", feat.size())
 
         feat = F.normalize(feat, p=2, dim=1)
         Proto = F.normalize(Proto, p=2, dim=1)
-        print("feat1", feat.size())
         logits = feat.mm(Proto.permute(1, 0).contiguous())
         logits = logits / self.cfg.MODEL.CONTRAST.TAU
 
-        print("logits", logits.size())
+        
         if pixelWiseWeight is None:
-            ce_criterion = nn.CrossEntropyLoss()
+            ce_criterion = nn.CrossEntropyLoss(ignore_index=255)
             loss = ce_criterion(logits, labels) 
         else: 
-            ce_criterion = nn.CrossEntropyLoss(reduction='none')
+            ce_criterion = nn.CrossEntropyLoss(reduction='none', ignore_index=255)
             loss = ce_criterion(logits, labels) 
-            print(loss.size())
+            print('ls', loss.size())
             loss = torch.mean(loss * pixelWiseWeight)
         
         return loss
