@@ -27,6 +27,7 @@ class PrototypeContrastiveLoss(nn.Module):
         print("feat", feat.size())
         labels = labels[mask]
         feat = feat[mask]
+        print("feat", feat.size())
 
         feat = F.normalize(feat, p=2, dim=1)
         Proto = F.normalize(Proto, p=2, dim=1)
