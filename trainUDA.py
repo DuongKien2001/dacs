@@ -577,6 +577,7 @@ def main():
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
                                          align_corners=True)
+        print(pseudo_weight.size())
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
         print(pseudo_weight.size())
 
