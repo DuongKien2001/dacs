@@ -571,16 +571,19 @@ def main():
         assert not src_mask.requires_grad
         _, _, Ht, Wt = tgt_feat.size()
         
-        
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
-        tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
         print(tgt_mask.size())
+        tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
+        pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
+                                         size=(65,65), mode='bilinear',
+                                         align_corners=True)
+        print(pseudo_weight.size())
+        
         
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
-        print(torch.min(pixelWiseWeight))
 
         # update feature-level statistics
         feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
@@ -603,7 +606,6 @@ def main():
             src_out_ema = src_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, cfg.MODEL.NUM_CLASSES)
             tgt_out_ema = tgt_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
             # update output-level statistics
-            print(tgt_mask.size())
             out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
@@ -631,7 +633,6 @@ def main():
             loss_l_value += L_l.item()
             if train_unlabeled:
                 loss_u_value += L_u.item()
-        print(loss, loss_out, loss_feat, L_u, L_l)
         loss.backward()
         optimizer.step()
 
@@ -644,6 +645,8 @@ def main():
 
         if i_iter % save_checkpoint_every == 0 and i_iter!=0:
             _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
+            feat_estimator.save(name='prototype_feat_dist.pth')
+            out_estimator.save(name='prototype_out_dist.pth')
 
 
         if config['utils']['tensorboard']:
@@ -669,11 +672,9 @@ def main():
                 mIoU, eval_loss = evaluate(model, dataset, ignore_label=250, input_size=(512,1024), save_dir=checkpoint_dir)
 
             model.train()
-
+            print("mIoU: ",mIoU)
             if mIoU > best_mIoU and save_best_model:
                 best_mIoU = mIoU
-                _save_checkpoint(i_iter, model, optimizer, config, ema_model, save_best=True)
-            else:
                 _save_checkpoint(i_iter, model, optimizer, config, ema_model, save_best=True)
 
             if config['utils']['tensorboard']:
@@ -769,7 +770,6 @@ if __name__ == '__main__':
     else:
         checkpoint_dir = os.path.join(config['utils']['checkpoint_dir'], start_writeable + '-' + args.name)
     log_dir = checkpoint_dir
-    print(checkpoint_dir)
 
     val_per_iter = config['utils']['val_per_iter']
     use_tensorboard = config['utils']['tensorboard']
@@ -782,10 +782,7 @@ if __name__ == '__main__':
     else:
         save_unlabeled_images = False
 
-    gpus = (0,1,2,3)[:args.gpus]
-    
-
-    
+    gpus = (0,1,2,3)[:args.gpus]    
     cfg.merge_from_file(args.config_file)
     #cfg.merge_from_list(args.opts)
     cfg.freeze()
