@@ -577,7 +577,9 @@ def main():
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
                                          align_corners=True)
+        pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
         print(pseudo_weight.size())
+
         
         
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
@@ -586,7 +588,7 @@ def main():
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
 
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=torch.min(pixelWiseWeight))
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=None)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
