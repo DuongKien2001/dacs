@@ -593,7 +593,8 @@ def main():
 
         # contrastive loss on both domains
         
-        print(src_feat.size())
+        print('sr: ',src_feat.size())
+        print('tg: ', tgt_feat.size())
         loss_feat = pcl_criterion_src(Proto=feat_estimator.Proto.detach(),
                                   feat=src_feat,
                                   labels=src_mask) \
