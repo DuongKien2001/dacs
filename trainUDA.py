@@ -420,7 +420,7 @@ def main():
     #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
     
-    start_iteration = 0
+    start_iteration = 2975
 
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
@@ -645,7 +645,7 @@ def main():
 
         print('iter = {0:6d}/{1:6d}, loss_l = {2:.3f}, loss_u = {3:.3f}'.format(i_iter, num_iterations, loss_l_value, loss_u_value))
 
-        if i_iter % save_checkpoint_every == 0 and i_iter!=0:
+        if i_iter % save_checkpoint_every == 1486 and i_iter!=0:
             _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
             feat_estimator.save(name='prototype_feat_dist.pth')
             out_estimator.save(name='prototype_out_dist.pth')
@@ -668,6 +668,7 @@ def main():
                     accumulated_loss_u = []
 
 
+        """
         if i_iter % val_per_iter == 0 and i_iter != 0:
             model.eval()
             if dataset == 'cityscapes':
@@ -682,6 +683,7 @@ def main():
                 tensorboard_writer.add_scalar('Validation/mIoU', mIoU, i_iter)
                 tensorboard_writer.add_scalar('Validation/Loss', eval_loss, i_iter)
 
+        """
         if save_unlabeled_images and train_unlabeled and i_iter % save_checkpoint_every == 0:
             # Saves two mixed images and the corresponding prediction
             save_image(inputs_u_s[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
