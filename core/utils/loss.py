@@ -8,7 +8,7 @@ class PrototypeContrastiveLoss(nn.Module):
         super(PrototypeContrastiveLoss, self).__init__()
         self.cfg = cfg
 
-    def forward(self, Proto, feat, labels, pixelWiseWeight=None):
+    def forward(self, Proto, feat, labels):
         """
         Args:
             C: NUM_CLASSES A: feat_dim B: batch_size H: feat_high W: feat_width N: number of pixels except IGNORE_LABEL
@@ -36,6 +36,7 @@ class PrototypeContrastiveLoss(nn.Module):
             loss = ce_criterion(logits, labels) 
         else: 
             ce_criterion = nn.CrossEntropyLoss(reduction='none', ignore_index=255)
+            loss = ce_criterion(logits, labels) 
             loss = torch.mean(loss * pixelWiseWeight)
         
         return loss

@@ -38,7 +38,7 @@
   "ignore_label": 255,
 
   "utils": {
-    "save_checkpoint_every": 1488,
+    "save_checkpoint_every": 1487,
     "checkpoint_dir": "/kaggle/working/dacs",
     "val_per_iter": 1487,
     "tensorboard": true,

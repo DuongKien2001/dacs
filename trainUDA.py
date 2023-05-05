@@ -4,7 +4,7 @@ import sys
 import random
 import timeit
 import datetime
-
+import copy 
 import numpy as np
 import pickle
 import scipy.misc
@@ -569,27 +569,27 @@ def main():
         src_mask = F.interpolate(labels.unsqueeze(0).float(), size=(Hs, Ws), mode='nearest').squeeze(0).long()
         src_mask = src_mask.contiguous().view(B * Hs * Ws, )
         assert not src_mask.requires_grad
-        _, _, Ht, Wt = tgt_feat.size()
-        
-        tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
-        
-        tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
-        print(torch.sum(tgt_mask==0))
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
                                          align_corners=True)
         
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
-        
+        _, _, Ht, Wt = tgt_feat.size()
+        tgt_out_maxvalue, tgt_mask_ema = torch.max(tgt_feat, dim=1)
+        tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
+        tgt_mask_upt = copy.deepcopy(tgt_mask)
+        for i in range(cfg.MODEL.NUM_CLASSES):
+            tgt_mask_upt[(((tgt_out_maxvalue < cfg.SOLVER.DELTA) * (tgt_mask_ema == i)).int() + (pseudo_weight != 1.0).int()) == 2] = 255
 
-        
+        tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
+        tgt_mask_upt = tgt_mask_upt.contiguous().view(B * Hs * Ws, )
         src_feat = src_feat.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat = tgt_feat.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
         src_feat_ema = src_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, A)
         tgt_feat_ema = tgt_feat_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, A)
 
         # update feature-level statistics
-        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask, pixelWiseWeight=pseudo_weight)
+        feat_estimator.update(features=tgt_feat_ema.detach(), labels=tgt_mask_upt)
         feat_estimator.update(features=src_feat_ema.detach(), labels=src_mask)
 
         # contrastive loss on both domains
@@ -608,7 +608,7 @@ def main():
             src_out_ema = src_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Hs * Ws, cfg.MODEL.NUM_CLASSES)
             tgt_out_ema = tgt_out_ema.permute(0, 2, 3, 1).contiguous().view(B * Ht * Wt, cfg.MODEL.NUM_CLASSES)
             # update output-level statistics
-            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask, pixelWiseWeight=pseudo_weight)
+            out_estimator.update(features=tgt_out_ema.detach(), labels=tgt_mask_upt)
             out_estimator.update(features=src_out_ema.detach(), labels=src_mask)
 
             # the proposed contrastive loss on prediction map
