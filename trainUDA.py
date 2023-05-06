@@ -174,11 +174,11 @@ def save_image(image, epoch, id, palette):
 
             image = restore_transform(image)
             #image = PIL.Image.fromarray(np.array(image)[:, :, ::-1])  # BGR->RGB
-            image.save(os.path.join('visualiseImages/', str(epoch)+ id + '.png'))
+            image.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
         else:
             mask = image.numpy()
             colorized_mask = colorize_mask(mask, palette)
-            colorized_mask.save(os.path.join('visualiseImages', str(epoch)+ id + '.png'))
+            colorized_mask.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
 
 def _save_checkpoint(iteration, model, optimizer, config, ema_model, save_best=False, overwrite=True):
     checkpoint = {
