@@ -679,11 +679,11 @@ def main():
 
         if save_unlabeled_images and train_unlabeled and (i_iter == 32714 or i_iter == 32715):
             # Saves two mixed images and the corresponding prediction
-            save_image(inputs_u_s[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
-            save_image(inputs_u_s[1].cpu(),i_iter,'input2',palette.CityScpates_palette)
-            _, pred_u_s = torch.max(logits_u_s, dim=1)
-            save_image(pred_u_s[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
-            save_image(pred_u_s[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
+            save_image(inputs_u_w[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
+            save_image(inputs_u_w[1].cpu(),i_iter,'input2',palette.CityScpates_palette)
+            _, pred_u_w = torch.max(logits_u_w, dim=1)
+            save_image(pred_u_w[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
+            save_image(pred_u_w[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
 
     _save_checkpoint(num_iterations, model, optimizer, config, ema_model)
 
