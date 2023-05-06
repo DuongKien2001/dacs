@@ -437,6 +437,9 @@ def main():
     
     accumulated_loss_l = []
     accumulated_loss_u = []
+    accumulated_loss_feat = []
+    accumulated_loss_out = []
+
 
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
@@ -449,6 +452,8 @@ def main():
 
         loss_u_value = 0
         loss_l_value = 0
+        loss_feat_value = 0
+        loss_out_value = 0
 
         optimizer.zero_grad()
 
@@ -509,11 +514,9 @@ def main():
                     nclasses = classes.shape[0]
                     #if nclasses > 0:
                     classes = (classes[torch.Tensor(np.random.choice(nclasses, int((nclasses+nclasses%2)/2),replace=False)).long()]).cuda()
-                    print('classes: ', classes)
 
                     if image_i == 0:
                         MixMask0 = transformmasks.generate_class_mask(labels[image_i], classes).unsqueeze(0).cuda()
-                        print(MixMask0)
                     else:
                         MixMask1 = transformmasks.generate_class_mask(labels[image_i], classes).unsqueeze(0).cuda()
 
@@ -647,6 +650,8 @@ def main():
             loss_l_value += L_l.item()
             if train_unlabeled:
                 loss_u_value += L_u.item()
+            loss_feat_value += loss_feat.item()
+            loss_out_value += loss_out.item()
         loss.backward()
         optimizer.step()
 
@@ -655,7 +660,7 @@ def main():
             alpha_teacher = 0.99
             ema_model = update_ema_variables(ema_model = ema_model, model = model, alpha_teacher=alpha_teacher, iteration=i_iter)
 
-        print('iter = {0:6d}/{1:6d}, loss_l = {2:.3f}, loss_u = {3:.3f}'.format(i_iter, num_iterations, loss_l_value, loss_u_value))
+        #print('iter = {0:6d}/{1:6d}, loss_l = {2:.3f}, loss_u = {3:.3f}'.format(i_iter, num_iterations, loss_l_value, loss_u_value))
 
         if i_iter % save_checkpoint_every == 1486 and i_iter!=0:
             _save_checkpoint(i_iter, model, optimizer, config, ema_model, overwrite=False)
@@ -668,17 +673,26 @@ def main():
             if 'tensorboard_writer' not in locals():
                 tensorboard_writer = tensorboard.SummaryWriter(log_dir, flush_secs=30)
 
-            accumulated_loss_l.append(loss_l_value)
+        accumulated_loss_l.append(loss_l_value)
+        accumulated_loss_feat.append(loss_feat_value)
+        accumulated_loss_out.append(loss_out_value)
+        if train_unlabeled:
+            accumulated_loss_u.append(loss_u_value)
+            
+        if i_iter % log_per_iter == 0 and i_iter != 0:
+                #tensorboard_writer.add_scalar('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
+            print('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
+            print('Training/contrastive_feat_loss', np.mean(accumulated_loss_feat), i_iter)
+            print('Training/contrastive_out_loss', np.mean(accumulated_loss_out), i_iter)
+            accumulated_loss_l = []
+            accumulated_loss_feat = []
+            accumulated_loss_out = []
+
             if train_unlabeled:
-                accumulated_loss_u.append(loss_u_value)
-            if i_iter % log_per_iter == 0 and i_iter != 0:
-
-                tensorboard_writer.add_scalar('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
-                accumulated_loss_l = []
-
-                if train_unlabeled:
-                    tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
-                    accumulated_loss_u = []
+                #tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
+                print('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
+                accumulated_loss_u = []
+                
 
         if save_unlabeled_images and train_unlabeled and (i_iter == 56506):
             # Saves two mixed images and the corresponding prediction
