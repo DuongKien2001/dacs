@@ -425,6 +425,7 @@ def main():
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
     
+    """
     if True:
         model.eval()
         if dataset == 'cityscapes':
@@ -432,7 +433,7 @@ def main():
 
         model.train()
         print("mIoU: ",mIoU, eval_loss)
-    
+    """
     
     accumulated_loss_l = []
     accumulated_loss_u = []
@@ -508,9 +509,11 @@ def main():
                     nclasses = classes.shape[0]
                     #if nclasses > 0:
                     classes = (classes[torch.Tensor(np.random.choice(nclasses, int((nclasses+nclasses%2)/2),replace=False)).long()]).cuda()
+                    print('classes: ', classes)
 
                     if image_i == 0:
                         MixMask0 = transformmasks.generate_class_mask(labels[image_i], classes).unsqueeze(0).cuda()
+                        print(MixMask0)
                     else:
                         MixMask1 = transformmasks.generate_class_mask(labels[image_i], classes).unsqueeze(0).cuda()
 
@@ -677,13 +680,18 @@ def main():
                     tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                     accumulated_loss_u = []
 
-        if save_unlabeled_images and train_unlabeled and (i_iter == 32714 or i_iter == 32715):
+        if save_unlabeled_images and train_unlabeled and (i_iter == 56506):
             # Saves two mixed images and the corresponding prediction
-            save_image(inputs_u_w[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
-            save_image(inputs_u_w[1].cpu(),i_iter,'input2',palette.CityScpates_palette)
-            _, pred_u_w = torch.max(logits_u_w, dim=1)
-            save_image(pred_u_w[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
-            save_image(pred_u_w[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
+            save_image(inputs_u_s[0].cpu(),i_iter,'input_s1',palette.CityScpates_palette)
+            save_image(inputs_u_s[1].cpu(),i_iter,'input_s2',palette.CityScpates_palette)
+            save_image(inputs_u_w[0].cpu(),i_iter,'input_w1',palette.CityScpates_palette)
+            save_image(inputs_u_w[1].cpu(),i_iter,'input_w2',palette.CityScpates_palette)
+            save_image(images[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
+            save_image(images[1].cpu(),i_iter,'input2',palette.CityScpates_palette)
+
+            _, pred_u_s = torch.max(logits_u_w, dim=1)
+            #save_image(pred_u_s[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
+            #save_image(pred_u_s[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
 
     _save_checkpoint(num_iterations, model, optimizer, config, ema_model)
 
