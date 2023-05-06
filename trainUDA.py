@@ -174,11 +174,11 @@ def save_image(image, epoch, id, palette):
 
             image = restore_transform(image)
             #image = PIL.Image.fromarray(np.array(image)[:, :, ::-1])  # BGR->RGB
-            image.save(os.path.join('../visualiseImages/', str(epoch)+ id + '.png'))
+            image.save(os.path.join('visualiseImages/', str(epoch)+ id + '.png'))
         else:
             mask = image.numpy()
             colorized_mask = colorize_mask(mask, palette)
-            colorized_mask.save(os.path.join('../visualiseImages', str(epoch)+ id + '.png'))
+            colorized_mask.save(os.path.join('visualiseImages', str(epoch)+ id + '.png'))
 
 def _save_checkpoint(iteration, model, optimizer, config, ema_model, save_best=False, overwrite=True):
     checkpoint = {
@@ -676,7 +676,7 @@ def main():
                     tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                     accumulated_loss_u = []
 
-        if save_unlabeled_images and train_unlabeled and i_iter % save_checkpoint_every == 0:
+        if save_unlabeled_images and train_unlabeled and (i_iter == 32714 or i_iter == 32715):
             # Saves two mixed images and the corresponding prediction
             save_image(inputs_u_s[0].cpu(),i_iter,'input1',palette.CityScpates_palette)
             save_image(inputs_u_s[1].cpu(),i_iter,'input2',palette.CityScpates_palette)
@@ -771,11 +771,11 @@ if __name__ == '__main__':
     log_per_iter = config['utils']['log_per_iter']
 
     save_best_model = config['utils']['save_best_model']
-    if args.save_images:
-        print('Saving unlabeled images')
-        save_unlabeled_images = True
-    else:
-        save_unlabeled_images = False
+    #if args.save_images:
+    print('Saving unlabeled images')
+    save_unlabeled_images = True
+    #else:
+    #save_unlabeled_images = False
 
     gpus = (0,1,2,3)[:args.gpus]    
     cfg.merge_from_file(args.config_file)
