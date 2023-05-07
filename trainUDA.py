@@ -425,7 +425,7 @@ def main():
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
     
-    
+    """
     if True:
         model.eval()
         if dataset == 'cityscapes':
@@ -433,7 +433,7 @@ def main():
 
         model.train()
         print("mIoU: ",mIoU, eval_loss)
-    
+    """
     
     accumulated_loss_l = []
     accumulated_loss_u = []
