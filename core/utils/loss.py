@@ -30,10 +30,12 @@ class PrototypeContrastiveLoss(nn.Module):
         logits = feat.mm(Proto.permute(1, 0).contiguous())
         logits = logits / self.cfg.MODEL.CONTRAST.TAU
 
-        
         if pixelWiseWeight is None:
             ce_criterion = nn.CrossEntropyLoss(ignore_index=255)
-            loss = ce_criterion(logits, labels) 
+            ce_criterion1 = nn.CrossEntropyLoss(ignore_index=255, reduction='none')
+            loss = ce_criterion(logits, labels)
+            loss1 = ce_criterion1(logits, labels)
+            print(loss1)
             print('loss', loss)
         else: 
             ce_criterion = nn.CrossEntropyLoss(reduction='none', ignore_index=255)
