@@ -35,9 +35,9 @@ class PrototypeContrastiveLoss(nn.Module):
             loss = ce_criterion(logits, labels)
             loss1 = ce_criterion1(logits, labels)
             for i in range(100):
-                print('l'+str(i*12), logits[i+20])
+                print('l'+str(i*12), logits[i*12])
                 print(labels[i*12])
-                print('cel'+str(i*12), loss1[i+20])
+                print('cel'+str(i*12), loss1[i*12])
             print(loss1)
             print('loss', loss)
         else: 
