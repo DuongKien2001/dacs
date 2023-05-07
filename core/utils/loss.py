@@ -22,7 +22,6 @@ class PrototypeContrastiveLoss(nn.Module):
         assert feat.requires_grad
         assert feat.dim() == 2
         assert labels.dim() == 1
-        # remove IGNORE_LABEL pixels
 
         feat = F.normalize(feat, p=2, dim=1)
         Proto = F.normalize(Proto, p=2, dim=1)
