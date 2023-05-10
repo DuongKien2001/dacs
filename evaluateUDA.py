@@ -190,7 +190,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
     data_list = []
     colorize = VOCColorize()
     colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","beige","brown","gray","cyan","magenta", "violet", "lime", "darkred", "springgreen", "darkcyan", "tan"])
-    class_names = ["road",
+    """class_names = ["road",
             "sidewalk",
             "building",
             "wall",
@@ -208,8 +208,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             "bus",
             "train",
             "motorcycle",
-            "bicycle"
-        ]
+            "bicycle"]"""
 
     total_loss = []
 
