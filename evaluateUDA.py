@@ -195,6 +195,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
     for index, batch in enumerate(testloader):
         image, label, size, name, _ = batch
         size = size[0]
+        print('h1')
         #if index > 500:
         #    break
         with torch.no_grad():
