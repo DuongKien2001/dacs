@@ -212,8 +212,8 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             output = output.cpu().data[0].numpy()
             feature = feature.cpu().data[0].numpy()
             feature = feature.transpose(1,2,0)
-            a,b,_ = feature.shape()
-            print(feature.shape())
+            a,b,_ = feature.shape
+            print(feature.shape)
             feature = feature.reshape([-1, 2048])
 
             umap2d = UMAP(init='random', random_state=0)
