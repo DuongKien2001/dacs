@@ -222,6 +222,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
             label1 = label1.cpu().data[0].numpy()
             label1 = label1.reshape(-1)
+            print('je')
             for i in range(19):
                 m = label1 == i
                 proj = proj_2d[m]
@@ -249,7 +250,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
             save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
             """
-            if index == 0:
+            if index == 1:
                 break;
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
