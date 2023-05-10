@@ -208,7 +208,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             "bus",
             "train",
             "motorcycle",
-            "bicycle",
+            "bicycle"
         ]
 
     total_loss = []
