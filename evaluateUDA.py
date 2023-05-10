@@ -39,6 +39,8 @@ def get_arguments():
     parser = argparse.ArgumentParser(description="UDA evaluation script")
     parser.add_argument("-m","--model-path", type=str, default=None, required=True,
                         help="Model to evaluate")
+    parser.add_argument("-n","--model-path_o", type=str, default=None, required=True,
+                        help="Model to evaluate")
     parser.add_argument("--gpu", type=int, default=(0,),
                         help="choose gpu device.")
     parser.add_argument("--save-output-images", action="store_true",
@@ -162,7 +164,7 @@ def get_iou(data_list, class_num, dataset, save_path=None):
             f.write('meanIOU: ' + str(aveJ) + '\n')
     return aveJ
 
-def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_dir=None, input_size=(512,1024)):
+def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_dir=None, input_size=(512,1024), model1=None):
 
     if dataset == 'cityscapes':
         num_classes = 19
@@ -198,7 +200,10 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             output  = model(Variable(image).cuda())[0]
             output = interp(output)
             output1 = output
-
+            output1_o  = model1(Variable(image).cuda())[0]
+            output1_o = interp(output1_o)
+            output1_o = output1_o
+            
             label_cuda = Variable(label.long()).cuda()
             criterion = CrossEntropy2d(ignore_label=ignore_label).cuda()  # Ignore label ??
             loss = criterion(output, label_cuda)
@@ -217,9 +222,11 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             data_list.append([gt.flatten(), output.flatten()])
 
-            save_image(image[0].cpu(),index,'input_s1',palette.CityScpates_palette)
+            save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
             _, pred_u_s = torch.max(output1, dim=1)
-            save_image(pred_u_s[0].cpu(),index,'_pred1',palette.CityScpates_palette)
+            _, pred = torch.max(output1_o, dim=1)
+            save_image(pred_u_s[0].cpu(),index,'_pred',palette.CityScpates_palette)
+            save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
             save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
 
             if index == 3:
@@ -245,18 +252,23 @@ def main():
 
     #model = torch.nn.DataParallel(Res_Deeplab(num_classes=num_classes), device_ids=args.gpu)
     model = Res_Deeplab(num_classes=num_classes)
+    model1 = Res_Deeplab(num_classes=num_classes)
 
     checkpoint = torch.load(args.model_path)
+    checkpoint1 = torch.load(args.model_path_o)
     try:
         model.load_state_dict(checkpoint['ema_model'])
+        model1.load_state_dict(checkpoint1['ema_model'])
     except:
         model = torch.nn.DataParallel(model, device_ids=args.gpu)
         model.load_state_dict(checkpoint['ema_model'])
 
     model.cuda()
     model.eval()
+    model1.cuda()
+    model1.eval()
 
-    evaluate(model, dataset, ignore_label=ignore_label, save_output_images=args.save_output_images, save_dir=save_dir, input_size=input_size)
+    evaluate(model, dataset, ignore_label=ignore_label, save_output_images=args.save_output_images, save_dir=save_dir, input_size=input_size, model1=model1)
 
 
 if __name__ == '__main__':
