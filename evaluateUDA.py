@@ -189,13 +189,13 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
     data_list = []
     colorize = VOCColorize()
+    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","beige","brown","gray","cyan","magenta", "sky", "berry", "lime", "silver", "straw", "violet"])
 
     total_loss = []
 
     for index, batch in enumerate(testloader):
         image, label, size, name, _ = batch
         size = size[0]
-        print('h1')
         #if index > 500:
         #    break
         with torch.no_grad():
@@ -223,11 +223,10 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
             label1 = label1.cpu().data[0].numpy()
             label1 = label1.reshape(-1)
-            print('je')
             for i in range(19):
                 m = label1 == i
                 proj = proj_2d[m]
-                plt.scatter(proj[:,0], proj[:,1])
+                plt.scatter(proj[:,0], proj[:,1], color = colors[i])
 
             plt.show()
             plt.savefig('dacs/a.png')
