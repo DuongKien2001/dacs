@@ -269,7 +269,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
             save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
             
-            if index == 2:
+            if index == 20:
                 break;
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
