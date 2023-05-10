@@ -208,10 +208,10 @@ def main():
 
     checkpoint = torch.load(args.model_path)
     try:
-        model.load_state_dict(checkpoint['model'])
+        model.load_state_dict(checkpoint['ema_model'])
     except:
         model = torch.nn.DataParallel(model, device_ids=args.gpu)
-        model.load_state_dict(checkpoint['model'])
+        model.load_state_dict(checkpoint['ema_model'])
 
     model.cuda()
     model.eval()
