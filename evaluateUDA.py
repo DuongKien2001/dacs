@@ -7,6 +7,7 @@ import sys
 from collections import OrderedDict
 import os
 
+from umap import UMAP
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -65,7 +66,6 @@ def save_image(image, epoch, id, palette):
             restore_transform = transforms.Compose([
             DeNormalize(IMG_MEAN),
             transforms.ToPILImage()])
-
 
             image = restore_transform(image)
             #image = PIL.Image.fromarray(np.array(image)[:, :, ::-1])  # BGR->RGB
@@ -197,7 +197,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         #if index > 500:
         #    break
         with torch.no_grad():
-            output  = model(Variable(image).cuda())[0]
+            output, feature  = model(Variable(image).cuda())
             output = interp(output)
             output1 = output
             output1_o  = model1(Variable(image).cuda())[0]
@@ -210,6 +210,18 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             total_loss.append(loss.item())
 
             output = output.cpu().data[0].numpy()
+            feature = feature.cpu().data[0].numpy()
+            feature = feature.transpose(1,2,0)
+            feature = feature.reshape([65*65,-1])
+
+            umap2d = UMAP(init='random', random_state=0)
+
+            proj_2d = umap2d.fit_transform(feature)
+            label1 = F.interpolate(label.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
+            label1 = label1.cpu().data[0].numpy()
+            for i in range(19):
+                print(np.sum(label1==i))
+
 
             if dataset == 'cityscapes':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
@@ -221,14 +233,14 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             output = np.asarray(np.argmax(output, axis=2), dtype=np.int32)
 
             data_list.append([gt.flatten(), output.flatten()])
-
+            """
             save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
             _, pred_u_s = torch.max(output1, dim=1)
             _, pred = torch.max(output1_o, dim=1)
             save_image(pred_u_s[0].cpu(),index,'_pred',palette.CityScpates_palette)
             save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
             save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
-
+            """
             if index == 2:
                 break;
         if (index+1) % 100 == 0:
