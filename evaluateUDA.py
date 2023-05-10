@@ -69,11 +69,11 @@ def save_image(image, epoch, id, palette):
 
             image = restore_transform(image)
             #image = PIL.Image.fromarray(np.array(image)[:, :, ::-1])  # BGR->RGB
-            image.save(os.path.join('/kaggle/working', str(epoch)+ id + '.png'))
+            image.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
         else:
             mask = image.numpy()
             colorized_mask = colorize_mask(mask, palette)
-            colorized_mask.save(os.path.join('/kaggle/working', str(epoch)+ id + '.png'))
+            colorized_mask.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
 
 class VOCColorize(object):
     def __init__(self, n=22):
