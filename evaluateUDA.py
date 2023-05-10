@@ -219,7 +219,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             save_image(image[0].cpu(),index,'input_s1',palette.CityScpates_palette)
             _, pred_u_s = torch.max(output1, dim=1)
-            save_image(pred_u_s[0].cpu(),output,str(index)+'_pred1',palette.CityScpates_palette)
+            save_image(pred_u_s[0].cpu(),index,'_pred1',palette.CityScpates_palette)
 
             if index == 3:
                 break;
