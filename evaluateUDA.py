@@ -229,9 +229,8 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 proj = proj_2d[m]
                 plt.scatter(proj[:,0], proj[:,1])
 
-                print(i, proj.shape[0])
-                
-            print(i, np.sum(label1==250))
+            plt.show()
+            plt.savefig('dacs/a.png')
 
             if dataset == 'cityscapes':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
