@@ -218,12 +218,10 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             data_list.append([gt.flatten(), output.flatten()])
 
             save_image(image[0].cpu(),index,'input_s1',palette.CityScpates_palette)
-            save_image(image[1].cpu(),index,'input_s2',palette.CityScpates_palette)
             _, pred_u_s = torch.max(output1, dim=1)
             save_image(pred_u_s[0].cpu(),output,str(index)+'_pred1',palette.CityScpates_palette)
-            save_image(pred_u_s[1].cpu(),output,str(index)+'_pred2',palette.CityScpates_palette)
 
-            if index == 1:
+            if index == 3:
                 break;
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
