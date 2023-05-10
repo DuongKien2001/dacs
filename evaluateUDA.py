@@ -231,7 +231,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
                 print(i, proj.shape[0])
                 
-            print(i, np.sum(label==250))
+            print(i, np.sum(label1==250))
 
             if dataset == 'cityscapes':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
