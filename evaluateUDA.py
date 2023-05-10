@@ -21,6 +21,9 @@ import torchvision.transforms as transform
 from PIL import Image
 import scipy.misc
 from utils.loss import CrossEntropy2d
+from utils.helpers import colorize_mask
+from torchvision import transforms
+import utils.palette as palette
 
 IMG_MEAN = np.array((104.00698793,116.66876762,122.67891434), dtype=np.float32)
 
@@ -41,6 +44,34 @@ def get_arguments():
     parser.add_argument("--save-output-images", action="store_true",
                         help="save output images")
     return parser.parse_args()
+
+class DeNormalize(object):
+    def __init__(self, mean):
+        self.mean = mean
+
+    def __call__(self, tensor):
+        IMG_MEAN = torch.from_numpy(self.mean.copy())
+        IMG_MEAN, _ = torch.broadcast_tensors(IMG_MEAN.unsqueeze(1).unsqueeze(2), tensor)
+        tensor = tensor+IMG_MEAN
+        tensor = (tensor/255).float()
+        tensor = torch.flip(tensor,(0,))
+        return tensor
+
+def save_image(image, epoch, id, palette):
+    with torch.no_grad():
+        if image.shape[0] == 3:
+            restore_transform = transforms.Compose([
+            DeNormalize(IMG_MEAN),
+            transforms.ToPILImage()])
+
+
+            image = restore_transform(image)
+            #image = PIL.Image.fromarray(np.array(image)[:, :, ::-1])  # BGR->RGB
+            image.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
+        else:
+            mask = image.numpy()
+            colorized_mask = colorize_mask(mask, palette)
+            colorized_mask.save(os.path.join('dacs/', str(epoch)+ id + '.png'))
 
 class VOCColorize(object):
     def __init__(self, n=22):
@@ -166,6 +197,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         with torch.no_grad():
             output  = model(Variable(image).cuda())[0]
             output = interp(output)
+            output1 = output
 
             label_cuda = Variable(label.long()).cuda()
             criterion = CrossEntropy2d(ignore_label=ignore_label).cuda()  # Ignore label ??
@@ -179,11 +211,20 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             elif dataset == 'gta':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
 
+            
             output = output.transpose(1,2,0)
             output = np.asarray(np.argmax(output, axis=2), dtype=np.int32)
 
             data_list.append([gt.flatten(), output.flatten()])
 
+            save_image(image[0].cpu(),index,'input_s1',palette.CityScpates_palette)
+            save_image(image[1].cpu(),index,'input_s2',palette.CityScpates_palette)
+            _, pred_u_s = torch.max(output1, dim=1)
+            save_image(pred_u_s[0].cpu(),output,str(index)+'_pred1',palette.CityScpates_palette)
+            save_image(pred_u_s[1].cpu(),output,str(index)+'_pred2',palette.CityScpates_palette)
+
+            if index == 1:
+                break;
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
 
