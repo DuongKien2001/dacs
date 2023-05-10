@@ -8,6 +8,7 @@ from collections import OrderedDict
 import os
 
 from umap import UMAP
+from matplotlib import pyplot as plt
 import torch
 import torch.nn as nn
 from torch.autograd import Variable
@@ -213,7 +214,6 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             feature = feature.cpu().data[0].numpy()
             feature = feature.transpose(1,2,0)
             a,b,_ = feature.shape
-            print(feature.shape)
             feature = feature.reshape([-1, 2048])
 
             umap2d = UMAP(init='random', random_state=0)
@@ -221,9 +221,15 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             proj_2d = umap2d.fit_transform(feature)
             label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
             label1 = label1.cpu().data[0].numpy()
+            label1 = label1.reshape(-1)
             for i in range(19):
-                print(np.sum(label1==i))
+                m = label1 == i
+                proj = proj_2d[m]
+                plt.scatter(proj[:,0], proj[:,1])
 
+                print(i, proj.shape[0])
+                
+            print(i, np.sum(label==250))
 
             if dataset == 'cityscapes':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
@@ -243,7 +249,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
             save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
             """
-            if index == 2:
+            if index == 0:
                 break;
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
