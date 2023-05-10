@@ -212,12 +212,14 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             output = output.cpu().data[0].numpy()
             feature = feature.cpu().data[0].numpy()
             feature = feature.transpose(1,2,0)
+            a,b,_ = feature.shape()
+            print(feature.shape())
             feature = feature.reshape([-1, 2048])
 
             umap2d = UMAP(init='random', random_state=0)
 
             proj_2d = umap2d.fit_transform(feature)
-            label1 = F.interpolate(label.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
+            label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
             label1 = label1.cpu().data[0].numpy()
             for i in range(19):
                 print(np.sum(label1==i))
