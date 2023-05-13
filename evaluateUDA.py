@@ -292,7 +292,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 plt.scatter(proj_2d[v:v+lf[1].shape[0],0], proj_2d[v:v+lf[1].shape[0]:,1], color = colors[1])
                 v = v+lf[1].shape[0]
                 plt.scatter(proj_2d[v:v+lf[2].shape[0],0], proj_2d[v:v+lf[2].shape[0]:,1], color = colors[2])
-                v = v+lf[2]+lf[2].shape[0]
+                v = v+lf[2].shape[0]
                 plt.scatter(proj_2d[v:v+lf[3].shape[0],0], proj_2d[v:v+lf[3].shape[0]:,1], color = colors[3])
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
