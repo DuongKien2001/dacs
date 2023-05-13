@@ -275,12 +275,13 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                     if lf[i] == 0:
                         lf[i] = f
                     else:
-                        lf[i] = np.append(lf[i], f)
+                        lf[i] = np.append(lf[i], f, axis = 0)
 
             if index == 50:
-                u = np.append(lf[0], lf[1])
-                u = np.append(u, lf[2])
-                u = np.append(u, lf[3])
+                u = np.append(lf[0], lf[1], axis = 0)
+                u = np.append(u, lf[2], axis = 0)
+                u = np.append(u, lf[3], axis = 0)
+                print(u)
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
