@@ -216,7 +216,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         #if index > 500:
         #    break
         with torch.no_grad():
-            output, _  = model(Variable(image).cuda())
+            output, feature  = model(Variable(image).cuda())
             output = interp(output)
             output1 = output
             #output1_o  = model1(Variable(image).cuda())[0]
@@ -229,21 +229,19 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             total_loss.append(loss.item())
 
             output = output.cpu().data[0].numpy()
-            #feature = feature.cpu().data[0].numpy()
-            #feature = feature.transpose(1,2,0)
-            #a,b,_ = feature.shape
-            #feature = feature.reshape([-1, 2048])
+            feature = feature.cpu().data[0].numpy()
+            feature = feature.transpose(1,2,0)
+            a,b,_ = feature.shape
+            feature = feature.reshape([-1, 2048])
 
             #umap2d = UMAP(init='random', random_state=0)
 
             #proj_2d = umap2d.fit_transform(feature)
-            #label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
-            #label1 = label1.cpu().data[0].numpy()
-            #label1 = label1.reshape(-1)
-            #for i in range(19):
-            #    m = label1 == i
-            #    proj = proj_2d[m]
-            #    plt.scatter(proj[:,0], proj[:,1], color = colors[i])
+            label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
+            label1 = label1.cpu().data[0].numpy()
+            label1 = label1.reshape(-1)
+            
+            #   plt.scatter(proj[:,0], proj[:,1], color = colors[i])
 
             #plt.show()
             #plt.savefig('dacs/'+str(index)+'.png')
@@ -260,14 +258,44 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             data_list.append([gt.flatten(), output.flatten()])
             
-            if index < 30:  
+            if index < 50:  
+                """
                 save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
                 _, pred_u_s = torch.max(output1, dim=1)
                 #_, pred = torch.max(output1_o, dim=1)
                 save_image(pred_u_s[0].cpu(),index,'_pred',palette.CityScpates_palette)
                 #save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
                 save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
-            
+                """
+                ll = [0,1,13,14]
+                lf = [0,0,0,0]
+                for i in range(4):
+                    m = label1 == ll[i]
+                    f = feature[m]
+                    if lf[i] == 0:
+                        lf[i] = f
+                    else:
+                        lf[i] = np.append(lf[i], f)
+
+            if index == 50:
+                u = np.append(lf[0], lf[1])
+                u = np.append(u, lf[2])
+                u = np.append(u, lf[3])
+                umap2d = UMAP(init='random', random_state=0)
+
+                proj_2d = umap2d.fit_transform(u)
+                plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], color = colors[0])
+                v = lf[0].shape[0]
+                plt.scatter(proj_2d[v:v+lf[1].shape[0],0], proj_2d[v:v+lf[1].shape[1]:,1], color = colors[1])
+                v = v+lf[1]
+                plt.scatter(proj_2d[v:v+lf[2].shape[0],0], proj_2d[v:v+lf[2].shape[2]:,1], color = colors[2])
+                v = v+lf[2]
+                plt.scatter(proj_2d[v:v+lf[3].shape[0],0], proj_2d[v:v+lf[3].shape[3]:,1], color = colors[3])
+                plt.savefig('dacs/'+'a.png')
+                plt.figure().clear()
+                    
+                break;    
+
             
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
