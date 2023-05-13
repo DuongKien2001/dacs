@@ -41,8 +41,6 @@ def get_arguments():
     parser = argparse.ArgumentParser(description="UDA evaluation script")
     parser.add_argument("-m","--model-path", type=str, default=None, required=True,
                         help="Model to evaluate")
-    parser.add_argument("-n","--model-path_o", type=str, default=None, required=True,
-                        help="Model to evaluate")
     parser.add_argument("--gpu", type=int, default=(0,),
                         help="choose gpu device.")
     parser.add_argument("--save-output-images", action="store_true",
