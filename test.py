@@ -1,4 +1,3 @@
-"""
 from tensorboardX import SummaryWriter
 summary_writer = SummaryWriter(log_dir='')
 
@@ -17,5 +16,4 @@ for i in range(len(lines)):
             summary_writer.add_scalar('Train/loss_supervised', float(l[4]), l[5])
         if l[2] == "Training/Unsupervised":
             summary_writer.add_scalar('Train/loss_unsupervised', float(l[4]), l[5])
-"""
 

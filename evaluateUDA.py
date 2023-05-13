@@ -218,12 +218,12 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         #if index > 500:
         #    break
         with torch.no_grad():
-            output, feature  = model(Variable(image).cuda())
+            output, _  = model(Variable(image).cuda())
             output = interp(output)
             output1 = output
-            output1_o  = model1(Variable(image).cuda())[0]
-            output1_o = interp(output1_o)
-            output1_o = output1_o
+            #output1_o  = model1(Variable(image).cuda())[0]
+            #output1_o = interp(output1_o)
+            #output1_o = output1_o
             
             label_cuda = Variable(label.long()).cuda()
             criterion = CrossEntropy2d(ignore_label=ignore_label).cuda()  # Ignore label ??
@@ -231,25 +231,25 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             total_loss.append(loss.item())
 
             output = output.cpu().data[0].numpy()
-            feature = feature.cpu().data[0].numpy()
-            feature = feature.transpose(1,2,0)
-            a,b,_ = feature.shape
-            feature = feature.reshape([-1, 2048])
+            #feature = feature.cpu().data[0].numpy()
+            #feature = feature.transpose(1,2,0)
+            #a,b,_ = feature.shape
+            #feature = feature.reshape([-1, 2048])
 
-            umap2d = UMAP(init='random', random_state=0)
+            #umap2d = UMAP(init='random', random_state=0)
 
-            proj_2d = umap2d.fit_transform(feature)
-            label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
-            label1 = label1.cpu().data[0].numpy()
-            label1 = label1.reshape(-1)
-            for i in range(19):
-                m = label1 == i
-                proj = proj_2d[m]
-                plt.scatter(proj[:,0], proj[:,1], color = colors[i])
+            #proj_2d = umap2d.fit_transform(feature)
+            #label1 = F.interpolate(label.unsqueeze(1).float(), size=(a,b), mode='nearest').squeeze(1).long()
+            #label1 = label1.cpu().data[0].numpy()
+            #label1 = label1.reshape(-1)
+            #for i in range(19):
+            #    m = label1 == i
+            #    proj = proj_2d[m]
+            #    plt.scatter(proj[:,0], proj[:,1], color = colors[i])
 
-            plt.show()
-            plt.savefig('dacs/'+str(index)+'.png')
-            plt.figure().clear()
+            #plt.show()
+            #plt.savefig('dacs/'+str(index)+'.png')
+            #plt.figure().clear()
 
             if dataset == 'cityscapes':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
@@ -262,15 +262,15 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             data_list.append([gt.flatten(), output.flatten()])
             
-            save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
-            _, pred_u_s = torch.max(output1, dim=1)
-            _, pred = torch.max(output1_o, dim=1)
-            save_image(pred_u_s[0].cpu(),index,'_pred',palette.CityScpates_palette)
-            save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
-            save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
+            if index < 30:  
+                save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
+                _, pred_u_s = torch.max(output1, dim=1)
+                #_, pred = torch.max(output1_o, dim=1)
+                save_image(pred_u_s[0].cpu(),index,'_pred',palette.CityScpates_palette)
+                #save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
+                save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
             
-            if index == 20:
-                break;
+            
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
 
@@ -292,23 +292,23 @@ def main():
 
     #model = torch.nn.DataParallel(Res_Deeplab(num_classes=num_classes), device_ids=args.gpu)
     model = Res_Deeplab(num_classes=num_classes)
-    model1 = Res_Deeplab(num_classes=num_classes)
+    #model1 = Res_Deeplab(num_classes=num_classes)
 
     checkpoint = torch.load(args.model_path)
-    checkpoint1 = torch.load(args.model_path_o)
+    #checkpoint1 = torch.load(args.model_path_o)
     try:
         model.load_state_dict(checkpoint['ema_model'])
-        model1.load_state_dict(checkpoint1['ema_model'])
+        #model1.load_state_dict(checkpoint1['ema_model'])
     except:
         model = torch.nn.DataParallel(model, device_ids=args.gpu)
         model.load_state_dict(checkpoint['ema_model'])
 
     model.cuda()
     model.eval()
-    model1.cuda()
-    model1.eval()
+    #model1.cuda()
+    #model1.eval()
 
-    evaluate(model, dataset, ignore_label=ignore_label, save_output_images=args.save_output_images, save_dir=save_dir, input_size=input_size, model1=model1)
+    evaluate(model, dataset, ignore_label=ignore_label, save_output_images=args.save_output_images, save_dir=save_dir, input_size=input_size)
 
 
 if __name__ == '__main__':
