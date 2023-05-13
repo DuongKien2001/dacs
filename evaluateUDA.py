@@ -267,6 +267,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 #save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
                 save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
                 """
+                print(feature)
                 ll = [0,1,13,14]
                 lf = [0,0,0,0]
                 for i in range(4):
