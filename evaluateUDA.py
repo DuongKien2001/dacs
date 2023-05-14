@@ -258,7 +258,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             data_list.append([gt.flatten(), output.flatten()])
             
-            if index < 50:  
+            if index < 500:  
                 """
                 save_image(image[0].cpu(),index,'_input',palette.CityScpates_palette)
                 _, pred_u_s = torch.max(output1, dim=1)
@@ -268,7 +268,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
                 """
                 print(feature)
-                ll = [0,1,13,14]
+                ll = [1,0,13,14]
                 lf = [0,0,0,0]
                 for i in range(4):
                     m = label1 == ll[i]
@@ -279,7 +279,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                     else:
                         lf[i] = np.append(lf[i], f, axis = 0)
 
-            if index == 50:
+            if index == 500:
                 u = np.append(lf[0], lf[1], axis = 0)
                 u = np.append(u, lf[2], axis = 0)
                 u = np.append(u, lf[3], axis = 0)
