@@ -277,7 +277,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                     else:
                         lf[i] = np.append(lf[i], f, axis = 0)
 
-            if index == 500:
+            if index == 480:
                 u = np.append(lf[0], lf[1], axis = 0)
                 u = np.append(u, lf[2], axis = 0)
                 u = np.append(u, lf[3], axis = 0)
