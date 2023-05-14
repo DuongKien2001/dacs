@@ -274,7 +274,6 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                     f = feature[m]
                     if lf[i] == 0:
                         lf[i] = f
-                        print(f)
                     else:
                         lf[i] = np.append(lf[i], f, axis = 0)
 
