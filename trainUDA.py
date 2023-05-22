@@ -287,7 +287,7 @@ def prototype_dist_init(cfg, trainloader, model):
 
 def main():
     print(config)
-
+    list_name = []
     best_mIoU = 0
     feature_num = 2048
 
@@ -471,9 +471,11 @@ def main():
         weak_parameters={"flip": 0}
 
 
-        images, labels, _, _ = batch
+        images, labels, _, names = batch
         images = images.cuda()
         labels = labels.cuda().long()
+        for name in names:
+            list_name.append(name)
 
         #images, labels = weakTransform(weak_parameters, data = images, target = labels)
 
@@ -678,10 +680,11 @@ def main():
             print('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
             print('Training/contrastive_feat_loss', np.mean(accumulated_loss_feat), i_iter)
             print('Training/contrastive_out_loss', np.mean(accumulated_loss_out), i_iter)
+            print(list_name)
             accumulated_loss_l = []
             accumulated_loss_feat = []
             accumulated_loss_out = []
-
+            list_name = []
             if train_unlabeled:
                 #tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                 print('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
