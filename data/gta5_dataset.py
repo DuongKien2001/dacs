@@ -40,7 +40,7 @@ class GTA5DataSet(data.Dataset):
                 "label": label_file,
                 "name": name
             })
-        self.file_w = i
+        self.save_i = i
 
     def __len__(self):
         return len(self.files)
@@ -75,9 +75,8 @@ class GTA5DataSet(data.Dataset):
         image = image[:, :, ::-1]  # change to BGR
         image -= self.mean
         image = image.transpose((2, 0, 1))
-        if self.file_w is not None:
-            self.file_w.write(datafiles["name"])
-            print(datafiles["name"])
+        if self.save_i is not None:
+            print(datafiles["name"], end=" ")
         return image.copy(), label_copy.copy(), np.array(size), name
 
 

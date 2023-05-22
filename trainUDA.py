@@ -376,7 +376,6 @@ def main():
 
         trainloader_remain_iter = iter(trainloader_remain)
 
-    file_w = open('/kaggle/working/items.txt','w')
     #New loader for Domain transfer
     if True:
         data_loader = get_loader('gta')
@@ -385,9 +384,8 @@ def main():
             data_aug = Compose([RandomCrop_gta(input_size)])
         else:
             data_aug = None
-
         #data_aug = Compose([RandomHorizontallyFlip()])
-        train_dataset = data_loader(data_path, list_path = './data/gta5_list/train.txt', augmentations=data_aug, img_size=(1280,720), mean=IMG_MEAN, i = file_w)
+        train_dataset = data_loader(data_path, list_path = './data/gta5_list/train.txt', augmentations=data_aug, img_size=(1280,720), mean=IMG_MEAN, i = True)
 
     trainloader = data.DataLoader(train_dataset,
                     batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
@@ -464,7 +462,6 @@ def main():
         except:
             epochs_since_start = epochs_since_start + 1
             print('Epochs since start: ',epochs_since_start)
-            file_w.write("End"+"\n")
             trainloader_iter = iter(trainloader)
             batch = next(trainloader_iter)
 
