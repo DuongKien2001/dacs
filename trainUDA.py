@@ -419,7 +419,7 @@ def main():
     model.train()
     #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
-    
+    start_iteration = 0
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
     
