@@ -77,6 +77,7 @@ class GTA5DataSet(data.Dataset):
         image = image.transpose((2, 0, 1))
         if self.file_w is not None:
             self.file_w.write(datafiles["name"])
+            print(datafiles["name"])
         return image.copy(), label_copy.copy(), np.array(size), name
 
 

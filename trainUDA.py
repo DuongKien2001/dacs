@@ -420,8 +420,6 @@ def main():
     #prototype_dist_init(cfg, trainloader, model)
     interp = nn.Upsample(size=(input_size[0], input_size[1]), mode='bilinear', align_corners=True)
     
-    start_iteration = 2975
-
     if args.resume:
         start_iteration, model, optimizer, ema_model = _resume_checkpoint(args.resume, model, optimizer, ema_model)
     
@@ -693,7 +691,7 @@ def main():
                 accumulated_loss_u = []
                 
 
-        if save_unlabeled_images and train_unlabeled and (i_iter == 56506):
+        if save_unlabeled_images and train_unlabeled and (i_iter == 5650600):
             # Saves two mixed images and the corresponding prediction
             save_image(inputs_u_s[0].cpu(),i_iter,'input_s1',palette.CityScpates_palette)
             save_image(inputs_u_s[1].cpu(),i_iter,'input_s2',palette.CityScpates_palette)
