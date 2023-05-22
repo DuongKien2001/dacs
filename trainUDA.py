@@ -354,7 +354,7 @@ def main():
             data_aug = None
 
         #data_aug = Compose([RandomHorizontallyFlip()])
-        train_dataset = data_loader(data_path, is_transform=True, augmentations=data_aug, img_size=input_size, img_mean = IMG_MEAN, i = file)
+        train_dataset = data_loader(data_path, is_transform=True, augmentations=data_aug, img_size=input_size, img_mean = IMG_MEAN)
 
     train_dataset_size = len(train_dataset)
     print ('dataset size: ', train_dataset_size)
