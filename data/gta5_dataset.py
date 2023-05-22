@@ -12,7 +12,7 @@ from PIL import Image
 
 
 class GTA5DataSet(data.Dataset):
-    def __init__(self, root, list_path, max_iters=None, augmentations = None, img_size=(321, 321), mean=(128, 128, 128), scale=True, mirror=True, ignore_label=250):
+    def __init__(self, root, list_path, max_iters=None, augmentations = None, img_size=(321, 321), mean=(128, 128, 128), scale=True, mirror=True, ignore_label=250, i = None):
         self.root = root
         self.list_path = list_path
         self.img_size = img_size
@@ -40,6 +40,7 @@ class GTA5DataSet(data.Dataset):
                 "label": label_file,
                 "name": name
             })
+        self.file_w = i
 
     def __len__(self):
         return len(self.files)
@@ -74,7 +75,8 @@ class GTA5DataSet(data.Dataset):
         image = image[:, :, ::-1]  # change to BGR
         image -= self.mean
         image = image.transpose((2, 0, 1))
-
+        if self.file_w is not None:
+            self.file_w.write(datafiles["name"])
         return image.copy(), label_copy.copy(), np.array(size), name
 
 

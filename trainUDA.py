@@ -354,7 +354,7 @@ def main():
             data_aug = None
 
         #data_aug = Compose([RandomHorizontallyFlip()])
-        train_dataset = data_loader(data_path, is_transform=True, augmentations=data_aug, img_size=input_size, img_mean = IMG_MEAN)
+        train_dataset = data_loader(data_path, is_transform=True, augmentations=data_aug, img_size=input_size, img_mean = IMG_MEAN, i = file)
 
     train_dataset_size = len(train_dataset)
     print ('dataset size: ', train_dataset_size)
@@ -376,7 +376,7 @@ def main():
 
         trainloader_remain_iter = iter(trainloader_remain)
 
-
+    file = open('/kaggle/working/items.txt','w')
     #New loader for Domain transfer
     if True:
         data_loader = get_loader('gta')
@@ -438,9 +438,7 @@ def main():
     accumulated_loss_l = []
     accumulated_loss_u = []
     accumulated_loss_feat = []
-    accumulated_loss_out = []
-
-
+    accumulated_loss_out = []   
     if not os.path.exists(checkpoint_dir):
         os.makedirs(checkpoint_dir)
     with open(checkpoint_dir + '/config.json', 'w') as handle:
@@ -468,6 +466,7 @@ def main():
         except:
             epochs_since_start = epochs_since_start + 1
             print('Epochs since start: ',epochs_since_start)
+            file.write("End"+"\n")
             trainloader_iter = iter(trainloader)
             batch = next(trainloader_iter)
 

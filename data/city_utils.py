@@ -6,17 +6,24 @@ import os
 import numpy as np
 
 
-def recursive_glob(rootdir=".", suffix=""):
+def recursive_glob(rootdir=".", suffix="", h=None):
     """Performs recursive glob with given suffix and rootdir 
         :param rootdir is the root directory
         :param suffix is the suffix to be searched
     """
-    return [
-        os.path.join(looproot, filename)
-        for looproot, _, filenames in os.walk(rootdir)
-        for filename in filenames
-        if filename.endswith(suffix)
-    ]
+    a = []
+    if h is not None:
+        for looproot, _, filenames in os.walk(rootdir):
+            for filename in filenames:
+                if filename.endswith(suffix):
+                    if (filename[:-16] not in h):
+                        a.append(os.path.join(looproot, filename))
+    else:
+        for looproot, _, filenames in os.walk(rootdir):
+            for filename in filenames:
+                if filename.endswith(suffix):
+                    a.append(os.path.join(looproot, filename))
+    return a
 
 
 def poly_lr_scheduler(
