@@ -24,8 +24,9 @@ class GTA5DataSet(data.Dataset):
         # self.mean_bgr = np.array([104.00698793, 116.66876762, 122.67891434])
         self.img_ids = os.listdir("/kaggle/input/gtav-dataset/GTAV/images")
         self.a = a
-        for i in self.a:
-            self.img_ids.remove(i)
+        if a is not None:
+            for i in self.a:
+                self.img_ids.remove(i)
         print(len(self.img_ids))
         if not max_iters==None:
             self.img_ids = self.img_ids * int(np.ceil(float(max_iters) / len(self.img_ids)))
