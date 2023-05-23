@@ -686,15 +686,14 @@ def main():
         if i_iter % log_per_iter == 0 and i_iter != 0:
                 #tensorboard_writer.add_scalar('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
             print('Training/contrastive_feat_loss', np.mean(accumulated_loss_feat), 'Training/contrastive_out_loss', np.mean(accumulated_loss_out), i_iter)
-            accumulated_loss_l = []
             accumulated_loss_feat = []
             accumulated_loss_out = []
             if train_unlabeled:
                 #tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                 print('Training/Supervised loss', np.mean(accumulated_loss_l), 'Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                 accumulated_loss_u = []
-                
-
+                accumulated_loss_l = []
+            
         if save_unlabeled_images and train_unlabeled and (i_iter == 5650600):
             # Saves two mixed images and the corresponding prediction
             save_image(inputs_u_s[0].cpu(),i_iter,'input_s1',palette.CityScpates_palette)
