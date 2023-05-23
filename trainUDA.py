@@ -479,7 +479,6 @@ def main():
                 train_dataset = data_loader(data_path, list_path = './data/gta5_list/train.txt', augmentations=data_aug, img_size=(1280,720), mean=IMG_MEAN, a = None)
                 trainloader = data.DataLoader(train_dataset,
                     batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
-                trainloader_iter = iter(trainloader)
                 print('gta size:',len(trainloader))
             trainloader_iter = iter(trainloader)
             batch = next(trainloader_iter)
