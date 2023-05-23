@@ -389,8 +389,6 @@ def main():
         else:
             data_aug = None
         #data_aug = Compose([RandomHorizontallyFlip()])
-        if epochs_since_start > 0:
-            a = None
         train_dataset = data_loader(data_path, list_path = './data/gta5_list/train.txt', augmentations=data_aug, img_size=(1280,720), mean=IMG_MEAN, a = a)
 
     trainloader = data.DataLoader(train_dataset,
@@ -446,6 +444,7 @@ def main():
     with open(checkpoint_dir + '/config.json', 'w') as handle:
         json.dump(config, handle, indent=4, sort_keys=True)
 
+    
     print(epochs_since_start)
     for i_iter in range(start_iteration, num_iterations):
         model.train()
@@ -470,12 +469,25 @@ def main():
             print('Epochs since start: ',epochs_since_start)
             if epochs_since_start == 2:
                 list_name = []
+            if epochs_since_start == 1:
+                data_loader = get_loader('gta')
+                data_path = get_data_path('gta')
+                if random_crop:
+                    data_aug = Compose([RandomCrop_gta(input_size)])
+                else:
+                    data_aug = None        
+                train_dataset = data_loader(data_path, list_path = './data/gta5_list/train.txt', augmentations=data_aug, img_size=(1280,720), mean=IMG_MEAN, a = None)
+                trainloader = data.DataLoader(train_dataset,
+                    batch_size=batch_size, shuffle=True, num_workers=num_workers, pin_memory=True)
+                trainloader_iter = iter(trainloader)
+                print('gta size:',len(trainloader))
             trainloader_iter = iter(trainloader)
             batch = next(trainloader_iter)
 
         #if random_flip:
         #    weak_parameters={"flip":random.randint(0,1)}
         #else:
+        
         weak_parameters={"flip": 0}
 
 
