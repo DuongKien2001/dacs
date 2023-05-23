@@ -685,15 +685,13 @@ def main():
             
         if i_iter % log_per_iter == 0 and i_iter != 0:
                 #tensorboard_writer.add_scalar('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
-            print('Training/Supervised loss', np.mean(accumulated_loss_l), i_iter)
-            print('Training/contrastive_feat_loss', np.mean(accumulated_loss_feat), i_iter)
-            print('Training/contrastive_out_loss', np.mean(accumulated_loss_out), i_iter)
+            print('Training/contrastive_feat_loss', np.mean(accumulated_loss_feat), 'Training/contrastive_out_loss', np.mean(accumulated_loss_out), i_iter)
             accumulated_loss_l = []
             accumulated_loss_feat = []
             accumulated_loss_out = []
             if train_unlabeled:
                 #tensorboard_writer.add_scalar('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
-                print('Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
+                print('Training/Supervised loss', np.mean(accumulated_loss_l), 'Training/Unsupervised loss', np.mean(accumulated_loss_u), i_iter)
                 accumulated_loss_u = []
                 
 
