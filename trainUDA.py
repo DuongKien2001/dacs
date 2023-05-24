@@ -466,7 +466,7 @@ def main():
         except:
             epochs_since_start = epochs_since_start + 1
             print('Epochs since start: ',epochs_since_start)
-            if epochs_since_start == 2:
+            if epochs_since_start >= 2:
                 list_name = []
             if epochs_since_start == 1:
                 data_loader = get_loader('gta')
