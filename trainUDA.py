@@ -492,7 +492,7 @@ def main():
         images, labels, _, names = batch
         images = images.cuda()
         labels = labels.cuda().long()
-        if epochs_since_start == 2:
+        if epochs_since_start >= 2:
             for name in names:
                 list_name.append(name)
 
