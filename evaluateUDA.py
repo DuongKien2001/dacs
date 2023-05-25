@@ -294,9 +294,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
                 print('save success')
-                    
-                return 0,0  
-
+                     
             
         if (index+1) % 100 == 0:
             print('%d processed'%(index+1))
