@@ -682,7 +682,7 @@ def main():
             out_estimator.save(name='prototype_out_dist.pth')
             print('save_prototype')
 
-        if i_iter == 226023:
+        if i_iter == 254276:
             print(list_name)
         if config['utils']['tensorboard']:
             if 'tensorboard_writer' not in locals():
