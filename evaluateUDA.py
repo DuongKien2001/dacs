@@ -282,8 +282,8 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
-                plt.figure().set_figheight(20)
-                plt.figure().set_figwidth(20)
+                plt.figure().set_figheight(8)
+                plt.figure().set_figwidth(8)
                 plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], s = 5, color = CityScpates_palette[0], label = class_names[0])
                 v = lf[0].shape[0]
                 for i in range(18):
