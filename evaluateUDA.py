@@ -307,8 +307,8 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             if index == 499:
                 u = np.append(lf[0], lf[1], axis = 0)
-                u = np.append(u, lf[2], axis = 0)
-                u = np.append(u, lf[3], axis = 0)
+                for i in range(18):
+                    u = np.append(u, lf[i+1], axis = 0)
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
