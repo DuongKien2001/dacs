@@ -282,12 +282,14 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
+                plt.figure().set_figheight(20)
+                plt.figure().set_figweight(20)
                 plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], s = 5, color = CityScpates_palette[0], label = class_names[0])
                 v = lf[0].shape[0]
                 for i in range(18):
                     plt.scatter(proj_2d[v:v+lf[i+1].shape[0],0], proj_2d[v:v+lf[i+1].shape[0]:,1], s = 5, color = CityScpates_palette[i+1], label = class_names[i+1])
                     v = v+lf[i+1].shape[0]
-                plt.legend(loc='upper center', ncol= 9)
+                plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol= 5)
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
                 print('save success')
