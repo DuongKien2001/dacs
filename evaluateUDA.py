@@ -188,7 +188,40 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
     data_list = []
     colorize = VOCColorize()
-    colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","beige","brown","gray","cyan","magenta", "violet", "lime", "darkred", "springgreen", "darkcyan", "tan"])
+    #colors = np.array(["red","green","blue","yellow","pink","black","orange","purple","beige","brown","gray","cyan","magenta", "violet", "lime", "darkred", "springgreen", "darkcyan", "tan"])
+    CityScpates_palette = [128,64,128,244,35,232,70,70,70,102,102,156,190,153,153,153,153,153,
+                        250,170,30,220,220,0,107,142,35,152,251,152,70,130,180,220,20,60,255,0,0,0,0,142,
+                        0,0,70,0,60,100,0,80,100,0,0,230,119,11,32,128,192,0,0,64,128,128,64,128,0,192,
+                        128,128,192,128,64,64,0,192,64,0,64,192,0,192,192,0,64,64,128,192,64,128,64,192,
+                        128,192,192,128,0,0,64,128,0,64,0,128,64,128,128,64,0,0,192,128,0,192,0,128,192,
+                        128,128,192,64,0,64,192,0,64,64,128,64,192,128,64,64,0,192,192,0,192,64,128,192,
+                        192,128,192,0,64,64,128,64,64,0,192,64,128,192,64,0,64,192,128,64,192,0,192,192,
+                        128,192,192,64,64,64,192,64,64,64,192,64,192,192,64,64,64,192,192,64,192,64,192,
+                        192,192,192,192,32,0,0,160,0,0,32,128,0,160,128,0,32,0,128,160,0,128,32,128,128,
+                        160,128,128,96,0,0,224,0,0,96,128,0,224,128,0,96,0,128,224,0,128,96,128,128,224,
+                        128,128,32,64,0,160,64,0,32,192,0,160,192,0,32,64,128,160,64,128,32,192,128,160,
+                        192,128,96,64,0,224,64,0,96,192,0,224,192,0,96,64,128,224,64,128,96,192,128,224,
+                        192,128,32,0,64,160,0,64,32,128,64,160,128,64,32,0,192,160,0,192,32,128,192,160,
+                        128,192,96,0,64,224,0,64,96,128,64,224,128,64,96,0,192,224,0,192,96,128,192,224,
+                        128,192,32,64,64,160,64,64,32,192,64,160,192,64,32,64,192,160,64,192,32,192,192,
+                        160,192,192,96,64,64,224,64,64,96,192,64,224,192,64,96,64,192,224,64,192,96,192,
+                        192,224,192,192,0,32,0,128,32,0,0,160,0,128,160,0,0,32,128,128,32,128,0,160,128,
+                        128,160,128,64,32,0,192,32,0,64,160,0,192,160,0,64,32,128,192,32,128,64,160,128,
+                        192,160,128,0,96,0,128,96,0,0,224,0,128,224,0,0,96,128,128,96,128,0,224,128,128,
+                        224,128,64,96,0,192,96,0,64,224,0,192,224,0,64,96,128,192,96,128,64,224,128,192,
+                        224,128,0,32,64,128,32,64,0,160,64,128,160,64,0,32,192,128,32,192,0,160,192,128,
+                        160,192,64,32,64,192,32,64,64,160,64,192,160,64,64,32,192,192,32,192,64,160,192,
+                        192,160,192,0,96,64,128,96,64,0,224,64,128,224,64,0,96,192,128,96,192,0,224,192,
+                        128,224,192,64,96,64,192,96,64,64,224,64,192,224,64,64,96,192,192,96,192,64,224,
+                        192,192,224,192,32,32,0,160,32,0,32,160,0,160,160,0,32,32,128,160,32,128,32,160,
+                        128,160,160,128,96,32,0,224,32,0,96,160,0,224,160,0,96,32,128,224,32,128,96,160,
+                        128,224,160,128,32,96,0,160,96,0,32,224,0,160,224,0,32,96,128,160,96,128,32,224,
+                        128,160,224,128,96,96,0,224,96,0,96,224,0,224,224,0,96,96,128,224,96,128,96,224,
+                        128,224,224,128,32,32,64,160,32,64,32,160,64,160,160,64,32,32,192,160,32,192,32,
+                        160,192,160,160,192,96,32,64,224,32,64,96,160,64,224,160,64,96,32,192,224,32,192,
+                        96,160,192,224,160,192,32,96,64,160,96,64,32,224,64,160,224,64,32,96,192,160,96,
+                        192,32,224,192,160,224,192,96,96,64,224,96,64,96,224,64,224,224,64,96,96,192,224,
+                        96,192,96,224,192,0,0,0]
     """class_names = ["road",
             "sidewalk",
             "building",
@@ -212,17 +245,11 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
     total_loss = []
 
     for index, batch in enumerate(testloader):
-        image, label, size, name, _ = batch
+        image, label, size, _, _ = batch
         size = size[0]
-        #if index > 500:
-        #    break
         with torch.no_grad():
             output, feature  = model(Variable(image).cuda())
             output = interp(output)
-            output1 = output
-            #output1_o  = model1(Variable(image).cuda())[0]
-            #output1_o = interp(output1_o)
-            #output1_o = output1_o
             
             label_cuda = Variable(label.long()).cuda()
             criterion = CrossEntropy2d(ignore_label=ignore_label).cuda()  # Ignore label ??
@@ -231,9 +258,9 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
 
             output = output.cpu().data[0].numpy()
             feature = feature.cpu().data[0].numpy()
-            feature = feature.transpose(1,2,0)
-            a,b,_ = feature.shape
-            feature = feature.reshape([-1, 2048])
+            _,a,b = feature.shape
+            feature = feature.reshape([2048, a*b])
+            feature=feature.transpose(1,0)
 
             #umap2d = UMAP(init='random', random_state=0)
 
@@ -268,9 +295,9 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 #save_image(pred[0].cpu(),index,'_pred_o',palette.CityScpates_palette)
                 save_image(label[0].cpu(), index,'_label',palette.CityScpates_palette)
                 """
-                ll = [1,0,13,14]
-                lf = [0,0,0,0]
-                for i in range(4):
+                ll = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]
+                lf = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+                for i in range(19):
                     m = label1 == ll[i]
                     f = feature[m]
                     if lf[i] == 0:
@@ -278,20 +305,18 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                     else:
                         lf[i] = np.append(lf[i], f, axis = 0)
 
-            if index == 480:
+            if index == 499:
                 u = np.append(lf[0], lf[1], axis = 0)
                 u = np.append(u, lf[2], axis = 0)
                 u = np.append(u, lf[3], axis = 0)
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
-                plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], color = colors[0])
+                plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], color = [CityScpates_palette[0], CityScpates_palette[1], CityScpates_palette[2]])
                 v = lf[0].shape[0]
-                plt.scatter(proj_2d[v:v+lf[1].shape[0],0], proj_2d[v:v+lf[1].shape[0]:,1], color = colors[1])
-                v = v+lf[1].shape[0]
-                plt.scatter(proj_2d[v:v+lf[2].shape[0],0], proj_2d[v:v+lf[2].shape[0]:,1], color = colors[2])
-                v = v+lf[2].shape[0]
-                plt.scatter(proj_2d[v:v+lf[3].shape[0],0], proj_2d[v:v+lf[3].shape[0]:,1], color = colors[3])
+                for i in range(18):
+                    plt.scatter(proj_2d[v:v+lf[i+1].shape[0],0], proj_2d[v:v+lf[i+1].shape[0]:,1], color = [CityScpates_palette[i*3+3], CityScpates_palette[i*3+4], CityScpates_palette[i*3+2]])
+                    v = v+lf[i+1].shape[0]
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
                 print('save success')
@@ -304,9 +329,10 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         filename = os.path.join(save_dir, 'result.txt')
     else:
         filename = None
-    mIoU = get_iou(data_list, num_classes, dataset, filename)
-    loss = np.mean(total_loss)
-    return mIoU, loss
+    #mIoU = get_iou(data_list, num_classes, dataset, filename)
+    #loss = np.mean(total_loss)
+    #return mIoU, loss
+    return 0,0
 
 def main():
     """Create the model and start the evaluation process."""
