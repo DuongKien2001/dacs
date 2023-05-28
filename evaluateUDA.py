@@ -156,6 +156,7 @@ def get_iou(data_list, class_num, dataset, save_path=None):
         print('class {:2d} {:12} IU {:.2f}'.format(i, classes[i], 100*j_list[i]))
 
     print('meanIOU: ' + str(aveJ) + '\n')
+    print(M)
     if save_path:
         with open(save_path, 'w') as f:
             for i, iou in enumerate(j_list):
