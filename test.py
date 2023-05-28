@@ -1,3 +1,4 @@
+"""
 from tensorboardX import SummaryWriter
 
 summary_writer = SummaryWriter(log_dir='')
@@ -27,3 +28,27 @@ for i in range(len(lines)):
     if len(l) == 9:
         summary_writer.add_scalar('Train/loss_supervised', float(l[4]), l[8])
         summary_writer.add_scalar('Train/loss_unsupervised', float(l[7]), l[8])
+"""
+from core.configs import cfg
+from core.utils.prototype_dist_estimator import prototype_dist_estimator
+from matplotlib import pyplot as plt
+import numpy as np
+from umap import UMAP
+
+feat_estimator = prototype_dist_estimator(feature_num=2048, cfg=cfg)
+if True:
+    out_estimator = prototype_dist_estimator(feature_num=19, cfg=cfg)
+
+umap2d = UMAP(init='random', random_state=0)
+proj_2d = umap2d.fit_transform(feat_estimator)
+classes = np.array(("road", "sidewalk",
+        "building", "wall", "fence", "pole",
+        "traffic_light", "traffic_sign", "vegetation",
+        "terrain", "sky", "person", "rider",
+        "car", "truck", "bus",
+        "train", "motorcycle", "bicycle"))
+
+for i in range(19):
+    plt.text(proj_2d[i][0], proj_2d[i][1], classes[i])
+plt.show()
+
