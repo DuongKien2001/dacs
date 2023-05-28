@@ -38,9 +38,9 @@ from umap import UMAP
 feat_estimator = prototype_dist_estimator(feature_num=2048, cfg=cfg)
 if True:
     out_estimator = prototype_dist_estimator(feature_num=19, cfg=cfg)
-
+j = feat_estimator.Proto.cpu()
 umap2d = UMAP(init='random', random_state=0)
-proj_2d = umap2d.fit_transform(feat_estimator)
+proj_2d = umap2d.fit_transform(j)
 classes = np.array(("road", "sidewalk",
         "building", "wall", "fence", "pole",
         "traffic_light", "traffic_sign", "vegetation",
