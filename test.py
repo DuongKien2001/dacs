@@ -48,7 +48,8 @@ classes = np.array(("road", "sidewalk",
         "car", "truck", "bus",
         "train", "motorcycle", "bicycle"))
 plt.scatter(proj_2d[0], proj_2d[1])
-for i in range(19):
-    plt.text(proj_2d[i][0], proj_2d[i][1], classes[i])
+print(proj_2d)
+#for i in range(19):
+#    plt.text(proj_2d[i][0], proj_2d[i][1], classes[i])
 plt.show()
 
