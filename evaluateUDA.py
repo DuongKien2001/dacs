@@ -302,11 +302,10 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
         filename = os.path.join(save_dir, 'result.txt')
     else:
         filename = None
-    #mIoU = get_iou(data_list, num_classes, dataset, filename)
-    #loss = np.mean(total_loss)
-    #return mIoU, loss
-    return 0,0
-
+    mIoU = get_iou(data_list, num_classes, dataset, filename)
+    loss = np.mean(total_loss)
+    return mIoU, loss
+    
 def main():
     """Create the model and start the evaluation process."""
 
