@@ -250,7 +250,6 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
             elif dataset == 'gta':
                 gt = np.asarray(label[0].numpy(), dtype=np.int32)
 
-            
             output = output.transpose(1,2,0)
             output = np.asarray(np.argmax(output, axis=2), dtype=np.int32)
 
@@ -282,14 +281,12 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 umap2d = UMAP(init='random', random_state=0)
 
                 proj_2d = umap2d.fit_transform(u)
-                plt.figure().set_figheight(8)
-                plt.figure().set_figwidth(8)
                 plt.scatter(proj_2d[0:lf[0].shape[0],0], proj_2d[0:lf[0].shape[0]:,1], s = 5, color = CityScpates_palette[0], label = class_names[0])
                 v = lf[0].shape[0]
                 for i in range(18):
                     plt.scatter(proj_2d[v:v+lf[i+1].shape[0],0], proj_2d[v:v+lf[i+1].shape[0]:,1], s = 5, color = CityScpates_palette[i+1], label = class_names[i+1])
                     v = v+lf[i+1].shape[0]
-                plt.legend(loc='upper center', bbox_to_anchor=(0.5, -0.08), ncol= 5)
+                plt.legend(loc='best', ncol= 5, fronsize='small')
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
                 print('save success')
