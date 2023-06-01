@@ -286,7 +286,7 @@ def evaluate(model, dataset, ignore_label=250, save_output_images=False, save_di
                 for i in range(18):
                     plt.scatter(proj_2d[v:v+lf[i+1].shape[0],0], proj_2d[v:v+lf[i+1].shape[0]:,1], s = 5, color = CityScpates_palette[i+1], label = class_names[i+1])
                     v = v+lf[i+1].shape[0]
-                plt.legend(loc='best', ncol= 5, fronsize='small')
+                plt.legend(loc='best', ncol= 5, frontsize='small')
                 plt.savefig('dacs/'+'a.png')
                 plt.figure().clear()
                 print('save success')
