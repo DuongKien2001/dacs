@@ -515,11 +515,14 @@ def main():
             images_remain = images_remain.cuda()
             inputs_u_w, _ = weakTransform(weak_parameters, data = images_remain)
             #inputs_u_w = inputs_u_w.clone()
-            logits_u_w = interp(ema_model(inputs_u_w)[0])
+            logits_u_w_65 = (ema_model(inputs_u_w)[0])
+            logits_u_w = interp(logits_u_w_65)
             logits_u_w, _ = weakTransform(getWeakInverseTransformParameters(weak_parameters), data = logits_u_w.detach())
-
+            logits_u_w_65, _ = weakTransform(getWeakInverseTransformParameters(weak_parameters), data = logits_u_w_65.detach()) 
             pseudo_label = torch.softmax(logits_u_w.detach(), dim=1)
             max_probs, targets_u_w = torch.max(pseudo_label, dim=1)
+            pseudo_label_65 = torch.softmax(logits_u_w_65.detach(), dim=1)
+            max_probs_65, targets_u_w_65 = torch.max(pseudo_label_65, dim=1)
 
             if mix_mask == "class":
                 for image_i in range(batch_size):
@@ -609,7 +612,7 @@ def main():
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):
-            tgt_mask_upt[(((max_probs < cfg.SOLVER.DELTA) * (targets_u_w == i)).int() + (src_pixels != 1.0).int()) == 2] = 255
+            tgt_mask_upt[(((max_probs_65 < cfg.SOLVER.DELTA) * (targets_u_w_65 == i)).int() + (src_pixels != 1.0).int()) == 2] = 255
         if i_iter >= 100 and i_iter <= 120:
             print((src_pixels != 1.0).sum())
             print((tgt_mask_upt == 255).sum())
