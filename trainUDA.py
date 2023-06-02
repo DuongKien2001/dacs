@@ -613,9 +613,10 @@ def main():
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):
             tgt_mask_upt[(((max_probs_65 < cfg.SOLVER.DELTA) * (targets_u_w_65 == i)).int() + (src_pixels != 1.0).int()) == 2] = 255
-        if i_iter >= 100 and i_iter <= 120:
+        if i_iter >= 100 and i_iter <= 300 and i_iter %20 == 0:
             print((src_pixels != 1.0).sum())
             print((tgt_mask_upt == 255).sum())
+            print(((max_probs_65 < cfg.SOLVER.DELTA) * (targets_u_w_65 == i)).sum())
         tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
         tgt_mask_upt = tgt_mask_upt.contiguous().view(B * Hs * Ws, )
