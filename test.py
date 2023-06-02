@@ -2,7 +2,7 @@
 from tensorboardX import SummaryWriter
 
 summary_writer = SummaryWriter(log_dir='')
-
+"""
 f = open("log_ema_update_prototype_1.log", "r")
 lines = f.readlines()
 for i in range(len(lines)):
@@ -17,8 +17,8 @@ for i in range(len(lines)):
             summary_writer.add_scalar('Train/loss_supervised', float(l[4]), l[5])
         if l[2] == "Training/Unsupervised":
             summary_writer.add_scalar('Train/loss_unsupervised', float(l[4]), l[5])
-
-f = open("log_ema_update_prototype.txt", "r")
+"""
+f = open("dacs_loss.txt", "r")
 lines = f.readlines()
 for i in range(len(lines)):
     l = lines[i].split()
