@@ -601,14 +601,17 @@ def main():
         pseudo_weight = F.interpolate(pixelWiseWeight.unsqueeze(1),
                                          size=(65,65), mode='bilinear',
                                          align_corners=True).squeeze(1)
-        
+        pixelWiseWeight[pixelWiseWeight != 1.0] == 0.0
+        src_pixels = F.interpolate(pixelWiseWeight.unsqueeze(1),
+                                            size=(65,65), mode='nearest').squeeze(1)
+
         _, _, Ht, Wt = tgt_feat.size()
         tgt_mask = F.interpolate(targets_u.unsqueeze(1).float(), size=(65,65), mode='nearest').squeeze(1).long()
         tgt_mask_upt = copy.deepcopy(tgt_mask)
         for i in range(cfg.MODEL.NUM_CLASSES):
-            tgt_mask_upt[(((max_probs < cfg.SOLVER.DELTA) * (targets_u_w == i)).int() + (pseudo_weight != 1.0).int()) == 2] = 255
+            tgt_mask_upt[(((max_probs < cfg.SOLVER.DELTA) * (targets_u_w == i)).int() + (src_pixels != 1.0).int()) == 2] = 255
         if i_iter >= 100 and i_iter <= 120:
-            print((pseudo_weight != 1.0).sum())
+            print((src_pixels != 1.0).sum())
             print((tgt_mask_upt == 255).sum())
         tgt_mask = tgt_mask.contiguous().view(B * Hs * Ws, )
         pseudo_weight = pseudo_weight.contiguous().view(B * Hs * Ws, )
