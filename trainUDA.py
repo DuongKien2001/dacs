@@ -690,8 +690,6 @@ def main():
             out_estimator.save(name='prototype_out_dist.pth')
             print('save_prototype')
 
-        if i_iter == 211153:
-            print(list_name)
         if config['utils']['tensorboard']:
             if 'tensorboard_writer' not in locals():
                 tensorboard_writer = tensorboard.SummaryWriter(log_dir, flush_secs=30)
@@ -725,8 +723,12 @@ def main():
             _, pred_u_s = torch.max(logits_u_w, dim=1)
             #save_image(pred_u_s[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
             #save_image(pred_u_s[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
+        if i_iter == 212640:
+            print(list_name)
+            break
 
     _save_checkpoint(num_iterations, model, optimizer, config, ema_model)
+
 
     model.eval()
     if dataset == 'cityscapes':
