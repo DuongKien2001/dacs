@@ -723,13 +723,12 @@ def main():
             _, pred_u_s = torch.max(logits_u_w, dim=1)
             #save_image(pred_u_s[0].cpu(),i_iter,'pred1',palette.CityScpates_palette)
             #save_image(pred_u_s[1].cpu(),i_iter,'pred2',palette.CityScpates_palette)
-        if i_iter == 212640:
+        if i_iter == 240893:
             print(list_name)
             break
 
-    _save_checkpoint(num_iterations, model, optimizer, config, ema_model)
-
-
+    #_save_checkpoint(num_iterations, model, optimizer, config, ema_model)
+    """
     model.eval()
     if dataset == 'cityscapes':
         mIoU, val_loss = evaluate(model, dataset, ignore_label=250, input_size=(512,1024), save_dir=checkpoint_dir)
@@ -745,7 +744,7 @@ def main():
 
     end = timeit.default_timer()
     print('Total time: ' + str(end-start) + 'seconds')
-
+    """
 if __name__ == '__main__':
 
     print('---------------------------------Starting---------------------------------')
